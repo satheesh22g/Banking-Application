@@ -1,7 +1,7 @@
 import sys
 import csv
 import os
-from database import Base,Accounts
+from database import Base,Accounts,Customers
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from flask_bcrypt import Bcrypt
@@ -22,5 +22,14 @@ def accounts():
     db.execute("INSERT INTO accounts (id,name,user_type,password) VALUES (:u,:n,:t,:p)", {"u": usern,"n":name,"t":usert ,"p": passw_hash})
     db.commit()
     print("accounts Completed ............................................ ")
+    usern = 'C00000002'
+    name = 'suresh'
+    usert = 'executive'
+    passw = 'Suresh@002'
+    passw_hash = bcrypt.generate_password_hash(passw).decode('utf-8')
+    db.execute("INSERT INTO accounts (id,name,user_type,password) VALUES (:u,:n,:t,:p)", {"u": usern,"n":name,"t":usert ,"p": passw_hash})
+    db.commit()
+    print("accounts Completed ............................................ ")
+
 if __name__ == "__main__":
     accounts()

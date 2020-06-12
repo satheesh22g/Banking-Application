@@ -13,6 +13,15 @@ class Accounts(Base):
     name = Column(String(250),nullable=False)
     user_type = Column(String(250), nullable=False)
     password = Column(String(250))
+class Customers(Base):
+    __tablename__='customers'
+    cust_id = Column(String, primary_key=True)
+    name = Column(String(250),nullable=False)
+    address = Column(String(250), nullable=False)
+    age = Column(Integer)
+    state = Column(String(250), nullable=False)
+    city = Column(String(250), nullable=False)
+
 
 engine = create_engine('sqlite:///database.db')
 Base.metadata.create_all(engine)
