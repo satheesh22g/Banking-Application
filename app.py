@@ -24,17 +24,19 @@ Base.metadata.bind = engine
 db = scoped_session(sessionmaker(bind=engine))
 @app.route("/")
 def index():
-    if 'user' not in session:
-        return render_template("login.html")
-    else:
+    if 'user' in session:
         return redirect(url_for('dashboard'))
+    
+    return render_template("login.html" , login=True)
+    
 # MAIN
 @app.route("/dashboard")
 def dashboard():
     if 'user' not in session:
         return redirect(url_for('index'))
     else:
-        return render_template("menu.html")
+        return render_template("home.html" , home=True)
+
 @app.route("/addcustomer")
 def addcustomer():
     if 'user' not in session:
@@ -49,7 +51,7 @@ def addcustomer():
                 db.execute("INSERT INTO accounts (cust_id,name,address,age,state,city) VALUES (:c,:n,:add,:a,:s,:city)", {"c": cust_id,"n":name,"add":address,"a": age,"s":state,"city":city})
                 db.commit()
                 return redirect(url_for('dashboard'))
-    return render_template('addcustomer.html')
+    return render_template('addcustomer.html', addcustomer=True)
 
 # # Change Pasword
 # @app.route("/change-password", methods=["GET", "POST"])
@@ -113,10 +115,4 @@ def login():
                 session['usert'] = result.user_type
                 return redirect(url_for('dashboard'))
         message = "Username or password is incorrect."
-    return render_template("login.html", message=message)
-
-# Main
-if __name__ == '__main__':
-    app.secret_key = 'super_secret_key'
-    app.debug = True
-    app.run(host='0.0.0.0', port=5000)
+    return render_template("login.html", login=True)
