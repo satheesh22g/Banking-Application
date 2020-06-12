@@ -37,18 +37,18 @@ def dashboard():
     else:
         return render_template("home.html" , home=True)
 
-@app.route("/addcustomer")
+@app.route("/addcustomer" , methods=["GET", "POST"])
 def addcustomer():
     if 'user' not in session:
         if session['usert']=="executive":
             if request.method == "POST":
-                cust_id = request.form.get("username").upper()
+                cust_ssn_id = request.form.get("cust_ssn_id").upper()
                 name = request.form.get("name")
                 address = request.form.get("address")
                 age= request.form.get("age")
                 state = request.form.get("state")
                 city = request.form.get("city")
-                db.execute("INSERT INTO accounts (cust_id,name,address,age,state,city) VALUES (:c,:n,:add,:a,:s,:city)", {"c": cust_id,"n":name,"add":address,"a": age,"s":state,"city":city})
+                db.execute("INSERT INTO accounts (cust_ssn_id,name,address,age,state,city) VALUES (:c,:n,:add,:a,:s,:city)", {"c": cust_ssn_id,"n":name,"add":address,"a": age,"s":state,"city":city})
                 db.commit()
                 return redirect(url_for('dashboard'))
     return render_template('addcustomer.html', addcustomer=True)
@@ -113,6 +113,7 @@ def login():
                 session['user'] = usern
                 session['namet'] = result.name
                 session['usert'] = result.user_type
+                flash(f"{result.name.capitalize()}, you are successfully logged in!", "success")
                 return redirect(url_for('dashboard'))
-        message = "Username or password is incorrect."
+        flash("Sorry, Username or password not match.","danger")
     return render_template("login.html", login=True)

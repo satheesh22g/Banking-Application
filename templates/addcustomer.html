@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+
+{% block title %}Add Customer{% endblock %}
+
+{% block content %}
+<div class = "row">
+    <div class="card">
+        <div class="card-header">
+            Add Customer
+        </div>
+        <div class="card-body">
+            <form action="addcustomer" method="POST">
+                <div class="form-group input-group mb-3">
+                    <label class="m-auto pr-3" for="cust_ssn_id">Customer SSN Id</label>
+                   <input class="form-control" name="cust_ssn_id" id="cust_ssn_id" type="text" placeholder="Customer SSN ID" required maxlength="30">
+                </div>
+                <div class="form-group input-group mb-3">
+                    <label class="m-auto pr-3" for="name">Customer Name</label>
+                   <input class="form-control" name="name" id="name" type="text" placeholder="Customer SSN ID" required maxlength="30">
+                </div>
+                <div class="form-group input-group mb-3">
+                    <label class="m-auto pr-3" for="address">Address</label>
+                   <input class="form-control" name="address" id="address" type="text" placeholder="Customer SSN ID" required maxlength="30">
+                </div>
+                <div class="form-group input-group mb-3">
+                    <label class="m-auto pr-3" for="age">Age</label>
+                   <input class="form-control" name="age" id="age" type="text" placeholder="Customer SSN ID" required maxlength="30">
+                </div>
+                <div class="form-group input-group mb-3">
+                    <label class="m-auto pr-3" for="state">State</label>
+                   <input class="form-control" name="state" id="state" type="text" placeholder="Customer SSN ID" required maxlength="30">
+                </div>
+                <div class="form-group input-group mb-3">
+                    <label class="m-auto pr-3" for="city">City</label>
+                   <input class="form-control" name="city" id="city" type="text" placeholder="Customer SSN ID" required maxlength="30">
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Submit" class="btn float-left login_btn">
+                    <button class="reset_btn btn float-right">Reset</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

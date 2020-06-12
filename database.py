@@ -1,6 +1,6 @@
 import os
 import sys
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String, BigInteger
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import DateTime
 from sqlalchemy.orm import relationship
@@ -15,7 +15,8 @@ class Accounts(Base):
     password = Column(String(250))
 class Customers(Base):
     __tablename__='customers'
-    cust_id = Column(String, primary_key=True)
+    cust_id = Column(BigInteger().with_variant(Integer, "sqlite"), primary_key=True)
+    cust_ssn_id = Column(String, unique=True)
     name = Column(String(250),nullable=False)
     address = Column(String(250), nullable=False)
     age = Column(Integer)
