@@ -35,7 +35,21 @@ def dashboard():
         return redirect(url_for('index'))
     else:
         return render_template("menu.html")
-# REGISTER
+@app.route("/addcustomer")
+def addcustomer():
+    if 'user' not in session:
+        if session['usert']=="executive":
+            if request.method == "POST":
+                cust_id = request.form.get("username").upper()
+                name = request.form.get("name")
+                address = request.form.get("address")
+                age= request.form.get("age")
+                state = request.form.get("state")
+                city = request.form.get("city")
+                db.execute("INSERT INTO accounts (cust_id,name,address,age,state,city) VALUES (:c,:n,:add,:a,:s,:city)", {"c": cust_id,"n":name,"add":address,"a": age,"s":state,"city":city})
+                db.commit()
+                return redirect(url_for('dashboard'))
+    return render_template('addcustomer.html')
 
 # # Change Pasword
 # @app.route("/change-password", methods=["GET", "POST"])
@@ -80,7 +94,7 @@ def dashboard():
 @app.route("/logout")
 def logout():
     session.pop('user', None)
-    return redirect(url_for('dashboard'))
+    return redirect(url_for('index'))
 # LOGIN
 @app.route("/login", methods=["GET", "POST"])
 def login():
