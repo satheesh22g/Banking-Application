@@ -102,7 +102,7 @@ def logout():
 def login():
     if 'user' in session:
         return redirect(url_for('dashboard'))
-    message = ""
+    
     if request.method == "POST":
         usern = request.form.get("username").upper()
         passw = request.form.get("password").encode('utf-8')
@@ -114,7 +114,7 @@ def login():
                 session['namet'] = result.name
                 session['usert'] = result.user_type
                 return redirect(url_for('dashboard'))
-        message = "Username or password is incorrect."
+        flash("Username or password is incorrect.")
     return render_template("login.html", login=True)
 # Main
 if __name__ == '__main__':

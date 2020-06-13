@@ -41,7 +41,19 @@
                  <input type="submit" value="Login" class="btn float-right login_btn">
              </div>
          </form>
-     <p style="color: red;">{{message}}</p>
+    
+     {% with messages = get_flashed_messages(category_filter=["greet"]) %}
+               {% if messages %}
+         
+               <div class="alert">
+                 {% for message in messages %}
+                 <p style="color: red;">{{message}}</p>
+                 {% endfor %}
+                
+               </div>
+               
+                 {% endif %}
+             {% endwith %}
      </div>
 
  </div>
