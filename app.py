@@ -67,6 +67,43 @@ def addcustomer():
         
     return render_template('addcustomer.html', addcustomer=True)
 
+@app.route("/viewcustomer" , methods=["GET", "POST"])
+def viewcustomer():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    if session['usert'] != "executive":
+        flash("You don't have access to this page","warning")
+        return redirect(url_for('dashboard'))
+    if session['usert']=="executive":
+        if request.method == "POST":
+            cust_ssn_id = request.form.get("cust_ssn_id")
+            cust_id = request.form.get("cust_id")
+            data = db.execute("SELECT * from customers WHERE cust_id = :c or cust_ssn_id = :d", {"c": cust_id, "d": cust_ssn_id}).fetchone()
+            if data is not None:
+                print(data)
+                json_data = {
+                    'cust_id': data.cust_id,
+                    'cust_ssn_id': data.cust_ssn_id,
+                    'name': data.name,
+                    'address': data.address,
+                    'age': data.age,
+                    'state': data.state,
+                    'city': data.city
+                }
+                return render_template('viewcustomer.html', viewcustomer=True, data=json_data)
+            
+            flash("Customer not found! Please,Check you input.", 'danger')
+
+    return render_template('viewcustomer.html', viewcustomer=True)
+
+@app.route('/editcustomer')
+def editcustomer():
+    return redirect(url_for('dashboard'))
+
+@app.route('/deletecustomer')
+def deletecustomer():
+    return redirect(url_for('dashboard'))
+
 @app.route("/addaccount" , methods=["GET", "POST"])
 def addaccount():
     if 'user' not in session:
@@ -91,7 +128,7 @@ def addaccount():
                     flash(f"Customer {query.acc_id} is created with customer ID : {query.cust_id}.","success")
                     return redirect(url_for('dashboard'))
             flash(f'SSN id : {cust_id} is not present in database.','warning')
-        
+
     return render_template('addaccount.html', addcustomer=True)
 
 @app.route("/delaccount" , methods=["GET", "POST"])

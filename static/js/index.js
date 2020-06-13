@@ -34,4 +34,15 @@ $(document).ready(function() {
             event.preventDefault(); //stop character from entering input
         }
     })
+
+    $('#view_cust').validate({
+        rules: {
+            cust_id: {
+                required: '#cust_ssn_id:blank'
+            },
+            cust_ssn_id: {
+                required: '#cust_id:blank'
+            }
+          }
+    })
 });
