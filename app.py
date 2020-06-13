@@ -14,9 +14,9 @@ bcrypt = Bcrypt(app)
 app.secret_key = os.urandom(24)
 
 # Configure session to use filesystem
-app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"
-Session(app)
+# app.config["SESSION_PERMANENT"] = False
+# app.config["SESSION_TYPE"] = "filesystem"
+# Session(app)
 
 # Set up database
 engine = create_engine('sqlite:///database.db',connect_args={'check_same_thread': False},echo=True)
