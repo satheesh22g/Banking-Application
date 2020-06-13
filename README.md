@@ -27,7 +27,7 @@ bank employees and bank customers. Made it available through well-defined User I
 ### How to Run
 1. Clone this repo
 2. Unzip the file
-3. go student_chatbot folder
+3. go to Banking-Application folder
 4. install all requirements using pip 
 ```
 $ pip install -r requirements.txt
