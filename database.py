@@ -23,6 +23,7 @@ class Customers(Base):
     age = Column(Integer)
     state = Column(String(250), nullable=False)
     city = Column(String(250), nullable=False)
+    status = Column(String(250), nullable=False)
 
 class Accounts(Base):
     __tablename__='accounts'

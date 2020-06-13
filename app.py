@@ -54,7 +54,7 @@ def addcustomer():
             city = request.form.get("city")
             result = db.execute("SELECT * from customers WHERE cust_ssn_id = :c", {"c": cust_ssn_id}).fetchone()
             if result is None :
-                query = Customers(cust_ssn_id=cust_ssn_id,name=name,address=address,age=age,state=state,city=city)
+                query = Customers(cust_ssn_id=cust_ssn_id,name=name,address=address,age=age,state=state,city=city,status='activate')
                 # result = db.execute("INSERT INTO customers (cust_ssn_id,name,address,age,state,city) VALUES (:c,:n,:add,:a,:s,:city)", {"c": cust_ssn_id,"n":name,"add":address,"a": age,"s":state,"city":city})
                 db.add(query)
                 db.commit()
@@ -79,7 +79,7 @@ def viewcustomer():
             cust_ssn_id = request.form.get("cust_ssn_id")
             cust_id = request.form.get("cust_id")
             data = db.execute("SELECT * from customers WHERE cust_id = :c or cust_ssn_id = :d", {"c": cust_id, "d": cust_ssn_id}).fetchone()
-            if data is not None:
+            if data is not None and data.status != 'deactivate':
                 print(data)
                 json_data = {
                     'cust_id': data.cust_id,
@@ -92,7 +92,7 @@ def viewcustomer():
                 }
                 return render_template('viewcustomer.html', viewcustomer=True, data=json_data)
             
-            flash("Customer not found! Please,Check you input.", 'danger')
+            flash("Customer is Deactivated or not found! Please,Check you input.", 'danger')
 
     return render_template('viewcustomer.html', viewcustomer=True)
 
