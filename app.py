@@ -103,6 +103,55 @@ def editcustomer():
 @app.route('/deletecustomer')
 def deletecustomer():
     return redirect(url_for('dashboard'))
+
+@app.route("/addaccount" , methods=["GET", "POST"])
+def addaccount():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    if session['usert'] != "executive":
+        flash("You don't have access to this page","warning")
+        return redirect(url_for('dashboard'))
+    if session['usert']=="executive":
+        if request.method == "POST":
+            acc_id = int(request.form.get("acc_id"))
+            cust_id = request.form.get("cust_id")
+            acc_type = request.form.get("acc_type")
+            amount= int(request.form.get("amount"))
+            result = db.execute("SELECT * from customers WHERE cust_ssn_id = :c", {"c": cust_id}).fetchone()
+            if result is not None :
+                query = Accounts(acc_id=acc_id,acc_type=acc_type,balance=amount,cust_id=cust_id)
+                db.add(query)
+                db.commit()
+                if query.cust_id is None:
+                    flash("Data is not inserted","danger")
+                else:
+                    flash(f"Customer {query.acc_id} is created with customer ID : {query.cust_id}.","success")
+                    return redirect(url_for('dashboard'))
+            flash(f'SSN id : {cust_id} is not present in database.','warning')
+
+    return render_template('addaccount.html', addcustomer=True)
+
+@app.route("/delaccount" , methods=["GET", "POST"])
+def delaccount():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    if session['usert'] != "executive":
+        flash("You don't have access to this page","warning")
+        return redirect(url_for('dashboard'))
+    if session['usert']=="executive":
+        if request.method == "POST":
+            acc_id = int(request.form.get("acc_id"))
+            acc_type = request.form.get("acc_type")
+            result = db.execute("SELECT * from accounts WHERE acc_id = :a", {"a": acc_id}).fetchone()
+            if result is None :
+                query = Customers(acc_id=acc_id,acc_type=acc_type)
+                db.delete(query)
+                db.commit()
+                flash(f"Customer {query.name} is deleted with account ID : {query.acc_id}.","success")
+                return redirect(url_for('dashboard'))
+            flash(f'SSN id : {acc_id} is not present in database.','warning')
+    return render_template('addaccount.html', addcustomer=True)
+
 # # Change Pasword
 # @app.route("/change-password", methods=["GET", "POST"])
 # def changepass():
