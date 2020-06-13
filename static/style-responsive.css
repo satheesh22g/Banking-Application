@@ -1,0 +1,46 @@
+@media (max-width:364px){
+    
+
+    /* Header */
+    .navbarlogo .brand .logoisme {
+        width:60px;
+        height:60px;
+        float: left;
+        /* border:2px solid red; */
+    }
+    .navbarlogo .brand .logonitj {
+        width:60px;
+        height:60px;
+        float: right;
+        /* border:2px solid red; */
+        margin-right: 0px;
+    }
+    .navbarlogo .brand p  {
+        text-align: center;
+        width: 100%;
+        margin-top: 10px;
+        margin-right: 0px;
+        font-size: 16px;
+        line-height: 15px;
+        /* border:2px solid yellow; */
+    }
+    .resp_isme_title{
+        border: 1px solid red;
+    }
+    .headerContent{
+        font-size: 13px;
+    }
+}
+
+.resp_isme_title{
+    border: none;
+}
+/* Header */
+.headerContent{
+    /* border:1px solid red;; */
+    display:block;
+    font-size: 20px;
+}
+.resp_header_content{
+
+}
