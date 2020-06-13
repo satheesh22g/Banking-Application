@@ -22,23 +22,21 @@
 </head>
 <body>
 
-<div class="container">
+
     {% include "includes/header.html" %}
-</div>
 
 <div class="container">
+    <!-- this code is used for showing any sucsees/worning/failur popup message -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{category}}">
+                    <p>{{ message }}</p>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
     <div class="d-flex justify-content-center h-100">
-
-        <!-- this code is used for showing any sucsees/worning/failur popup message -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{category}}">
-                        <p>{{ message }}</p>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
 
         {% block content %}
 

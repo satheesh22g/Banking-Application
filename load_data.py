@@ -24,8 +24,16 @@ def accounts():
     print("accounts Completed ............................................ ")
     usern = 'C00000002'
     name = 'suresh'
-    usert = 'executive'
+    usert = 'cashier'
     passw = 'Suresh@002'
+    passw_hash = bcrypt.generate_password_hash(passw).decode('utf-8')
+    db.execute("INSERT INTO users (id,name,user_type,password) VALUES (:u,:n,:t,:p)", {"u": usern,"n":name,"t":usert ,"p": passw_hash})
+    db.commit()
+    print("accounts Completed ............................................ ")
+    usern = 'C00000003'
+    name = 'mahesh'
+    usert = 'teller'
+    passw = 'Mahesh@003'
     passw_hash = bcrypt.generate_password_hash(passw).decode('utf-8')
     db.execute("INSERT INTO users (id,name,user_type,password) VALUES (:u,:n,:t,:p)", {"u": usern,"n":name,"t":usert ,"p": passw_hash})
     db.commit()
