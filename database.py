@@ -26,7 +26,7 @@ class Accounts(Base):
     cust_id = Column(String, primary_key=True)
     acc_id = Column(String(250),nullable=False)
     acc_type = Column(String(250),nullable=False)
-    Balance = Column(Integer, nullable=False)
+    balance = Column(Integer, nullable=False)
     c_id = Column(String, ForeignKey('customers.cust_id'))
     customers = relationship(Customers)
 
