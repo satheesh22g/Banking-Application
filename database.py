@@ -17,13 +17,13 @@ class Users(Base):
 class Customers(Base):
     __tablename__='customers'
     cust_id = Column(Integer, primary_key=True, autoincrement=True)
-    cust_ssn_id = Column(String, unique=True)
+    cust_ssn_id = Column(Integer, unique=True)
     name = Column(String(250),nullable=False)
     address = Column(String(250), nullable=False)
     age = Column(Integer)
     state = Column(String(250), nullable=False)
     city = Column(String(250), nullable=False)
-    
+
 class Accounts(Base):
     __tablename__='accounts'
     cust_id = Column(String, primary_key=True)

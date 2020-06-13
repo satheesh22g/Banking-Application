@@ -46,10 +46,10 @@ def addcustomer():
         return redirect(url_for('dashboard'))
     if session['usert']=="executive":
         if request.method == "POST":
-            cust_ssn_id = request.form.get("cust_ssn_id").upper()
+            cust_ssn_id = int(request.form.get("cust_ssn_id"))
             name = request.form.get("name")
             address = request.form.get("address")
-            age= request.form.get("age")
+            age= int(request.form.get("age"))
             state = request.form.get("state")
             city = request.form.get("city")
             result = db.execute("SELECT * from customers WHERE cust_ssn_id = :c", {"c": cust_ssn_id}).fetchone()
