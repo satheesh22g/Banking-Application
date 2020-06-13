@@ -22,4 +22,16 @@ $(document).ready(function() {
         $("#state")[0].value = "";
         $("#city")[0].value = "";
     });
+
+    $('#cust_ssn_id, #age').keypress(function(event){
+        if(event.which = 8 && isNaN(String.fromCharCode(event.which))){
+            event.preventDefault(); //stop character from entering input
+        }
+    })
+
+    $('#name, #state, #city').keypress(function(event){
+        if(!((event.charCode > 64 && event.charCode < 91) || (event.charCode > 96 && event.charCode < 123) || event.charCode==32)){
+            event.preventDefault(); //stop character from entering input
+        }
+    })
 });

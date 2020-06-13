@@ -1283,6 +1283,9 @@ text-align:right;
  .footer {
     background: #181A1C;
     text-align: center;
+    bottom: 0;
+    /* position: fixed; */
+    width: 100%;
 }
 .footer > p {
     color: #fff;

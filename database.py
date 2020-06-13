@@ -13,9 +13,10 @@ class Accounts(Base):
     name = Column(String(250),nullable=False)
     user_type = Column(String(250), nullable=False)
     password = Column(String(250))
+    
 class Customers(Base):
     __tablename__='customers'
-    cust_id = Column(BigInteger().with_variant(Integer, "sqlite"), primary_key=True)
+    cust_id = Column(Integer, primary_key=True, autoincrement=True)
     cust_ssn_id = Column(String, unique=True)
     name = Column(String(250),nullable=False)
     address = Column(String(250), nullable=False)

@@ -40,17 +40,31 @@ def dashboard():
 @app.route("/addcustomer" , methods=["GET", "POST"])
 def addcustomer():
     if 'user' not in session:
-        if session['usert']=="executive":
-            if request.method == "POST":
-                cust_ssn_id = request.form.get("cust_ssn_id").upper()
-                name = request.form.get("name")
-                address = request.form.get("address")
-                age= request.form.get("age")
-                state = request.form.get("state")
-                city = request.form.get("city")
-                db.execute("INSERT INTO accounts (cust_ssn_id,name,address,age,state,city) VALUES (:c,:n,:add,:a,:s,:city)", {"c": cust_ssn_id,"n":name,"add":address,"a": age,"s":state,"city":city})
+        return redirect(url_for('login'))
+    if session['usert'] != "executive":
+        flash("You don't have access to this page","warning")
+        return redirect(url_for('dashboard'))
+    if session['usert']=="executive":
+        if request.method == "POST":
+            cust_ssn_id = request.form.get("cust_ssn_id").upper()
+            name = request.form.get("name")
+            address = request.form.get("address")
+            age= request.form.get("age")
+            state = request.form.get("state")
+            city = request.form.get("city")
+            result = db.execute("SELECT * from customers WHERE cust_ssn_id = :c", {"c": cust_ssn_id}).fetchone()
+            if result is None :
+                query = Customers(cust_ssn_id=cust_ssn_id,name=name,address=address,age=age,state=state,city=city)
+                # result = db.execute("INSERT INTO customers (cust_ssn_id,name,address,age,state,city) VALUES (:c,:n,:add,:a,:s,:city)", {"c": cust_ssn_id,"n":name,"add":address,"a": age,"s":state,"city":city})
+                db.add(query)
                 db.commit()
-                return redirect(url_for('dashboard'))
+                if query.cust_id is None:
+                    flash("Data is not inserted","danger")
+                else:
+                    flash(f"Customer {query.name} is created with customer ID : {query.cust_id}.","success")
+                    return redirect(url_for('dashboard'))
+            flash(f'SSN id : {cust_ssn_id} is already present in database.','warning')
+        
     return render_template('addcustomer.html', addcustomer=True)
 
 # # Change Pasword
