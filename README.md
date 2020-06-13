@@ -9,8 +9,6 @@ bank employees and bank customers. Made it available through well-defined User I
   * Develop a RESTful web application using the Python framework Flask
   * Implementing third-party OAuth authentication.
   * Implementing CRUD (create, read, update and delete) operations.
-  * How to handle chatterbot module in python
-  * How to use Kivy Python Graphics Library 
 
 ## Skills used for this project
 - Python –flask
