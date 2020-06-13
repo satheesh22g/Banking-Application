@@ -4,7 +4,7 @@ from flask import send_file
 from flask import Flask, session, render_template, request, redirect, url_for, flash, jsonify
 from flask_bcrypt import Bcrypt
 from flask_session import Session
-from database import Base,Accounts,Customers
+from database import Base,Accounts,Customers,Users
 from sqlalchemy import create_engine, exc
 from sqlalchemy.orm import scoped_session, sessionmaker
 
@@ -116,11 +116,11 @@ def logout():
 def login():
     if 'user' in session:
         return redirect(url_for('dashboard'))
-    message = ""
+    
     if request.method == "POST":
         usern = request.form.get("username").upper()
         passw = request.form.get("password").encode('utf-8')
-        result = db.execute("SELECT * FROM accounts WHERE id = :u", {"u": usern}).fetchone()
+        result = db.execute("SELECT * FROM users WHERE id = :u", {"u": usern}).fetchone()
         if result is not None:
             print(result['password'])
             if bcrypt.check_password_hash(result['password'], passw) is True:
@@ -131,3 +131,8 @@ def login():
                 return redirect(url_for('dashboard'))
         flash("Sorry, Username or password not match.","danger")
     return render_template("login.html", login=True)
+# Main
+if __name__ == '__main__':
+    app.secret_key = 'super_secret_key'
+    app.debug = True
+    app.run(host='0.0.0.0', port=5000)
