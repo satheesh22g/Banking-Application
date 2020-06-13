@@ -4,7 +4,7 @@ from flask import send_file
 from flask import Flask, session, render_template, request, redirect, url_for, flash, jsonify
 from flask_bcrypt import Bcrypt
 from flask_session import Session
-from database import Base,Accounts,Customers
+from database import Base,Accounts,Customers,Users
 from sqlalchemy import create_engine, exc
 from sqlalchemy.orm import scoped_session, sessionmaker
 
@@ -48,7 +48,7 @@ def addcustomer():
                 age= request.form.get("age")
                 state = request.form.get("state")
                 city = request.form.get("city")
-                db.execute("INSERT INTO accounts (cust_id,name,address,age,state,city) VALUES (:c,:n,:add,:a,:s,:city)", {"c": cust_id,"n":name,"add":address,"a": age,"s":state,"city":city})
+                db.execute("INSERT INTO customers (cust_id,name,address,age,state,city) VALUES (:c,:n,:add,:a,:s,:city)", {"c": cust_id,"n":name,"add":address,"a": age,"s":state,"city":city})
                 db.commit()
                 return redirect(url_for('dashboard'))
     return render_template('addcustomer.html', addcustomer=True)
@@ -106,7 +106,7 @@ def login():
     if request.method == "POST":
         usern = request.form.get("username").upper()
         passw = request.form.get("password").encode('utf-8')
-        result = db.execute("SELECT * FROM accounts WHERE id = :u", {"u": usern}).fetchone()
+        result = db.execute("SELECT * FROM users WHERE id = :u", {"u": usern}).fetchone()
         if result is not None:
             print(result['password'])
             if bcrypt.check_password_hash(result['password'], passw) is True:
