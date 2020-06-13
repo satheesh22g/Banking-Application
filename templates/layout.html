@@ -2,20 +2,19 @@
 <html>
 <head>
     <title>Retail Bank - {% block title %}{% endblock %}</title>
-    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
-    <script type = "text/javascript" src = "{{ url_for('static', filename = 'index.js') }}" ></script>
-    <link rel="stylesheet" type="text/css" href="static/css/bootstrap.css" />
-    <link rel="stylesheet" type="text/css" href="static/css/bootstrap-responsive.css" />
-    <link rel="stylesheet" type="text/css" href="static/css/style.css" />
-    <link rel="stylesheet" type="text/css" href="static/css/pluton.css" />
-    <link rel="stylesheet" type="text/css" href="static/css/style-responsive.css" />
+    <script type = "text/javascript" src = "{{ url_for('static', filename = 'js/index.js') }}" ></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'css/bootstrap.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'css/bootstrap-responsive.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'css/style.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'css/pluton.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'css/style-responsive.css') }}" />
     <link href="https://cdn.rawgit.com/michalsnik/aos/2.1.1/dist/aos.css" rel="stylesheet">
     <script src="https://cdn.rawgit.com/michalsnik/aos/2.1.1/dist/aos.js"></script>
         
-    <link rel="stylesheet" type="text/css" href="static/css/jquery.cslider.css" />
-    <link rel="stylesheet" type="text/css" href="static/css/jquery.bxslider.css" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'css/jquery.cslider.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'css/jquery.bxslider.css') }}" />
 
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
