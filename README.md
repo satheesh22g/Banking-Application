@@ -30,7 +30,6 @@ bank employees and bank customers. Made it available through well-defined User I
 1. Clone this repo
 2. Unzip the file
 3. go student_chatbot folder
-```
 4. install all requirements using pip 
 ```
 $ pip install -r requirements.txt
@@ -47,7 +46,10 @@ $ Python load_data.py
 ```
 $ Python app.py
 ```
-8. Open the browser and go to http://localhost:5000
+8. Open the browser and go to
+
+```
+ http://localhost:5000
 
 
 ```
