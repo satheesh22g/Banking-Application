@@ -36,7 +36,7 @@ $ pip install -r requirements.txt
 ```
 5. Create a database and tables 
 ```
-$ Python database_setup.py
+$ Python database.py
 ```
 6. Populate the database with some initial data
 ```
