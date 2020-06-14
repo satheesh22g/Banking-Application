@@ -22,7 +22,7 @@ bank employees and bank customers. Made it available through well-defined User I
   
 #### Setup Project:
   1. Download or Clone Banking-Application repository.
-  2. Find the student_chatbot folder and replace it with the content of this current repository, by either downloading or cloning it from [Here](https://github.com/satheesh22g/Banking-Application/).
+  2. Find the Banking-Application folder and replace it with the content of this current repository, by either downloading or cloning it from [Here](https://github.com/satheesh22g/Banking-Application/).
 
 ### How to Run
 1. Clone this repo
