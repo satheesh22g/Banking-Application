@@ -148,10 +148,8 @@ def delaccount():
                 query = db.execute("delete from accounts WHERE acc_id = :a and acc_type=:at", {"a": acc_id,"at":acc_type})
                 db.commit()
                 flash(f"Customer account is deleted.","success")
-                print(1)
                 return redirect(url_for('dashboard'))
             flash(f'SSN id : {acc_id} is not present in database.','warning')
-            print(2)
     return render_template('delaccount.html', addcustomer=True)
 
 # # Change Pasword
