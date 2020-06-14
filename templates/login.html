@@ -32,14 +32,14 @@
                  <div class="input-group-prepend">
                      <span class="input-group-text"><i class="fas fa-user"></i></span>
                  </div>
-                <input class="form-control" name="username" type="text" placeholder="username" required maxlength="30">
+                <input class="form-control" name="username" type="text" placeholder="UserName" required maxlength="30">
                  
              </div>
              <div class="input-group form-group">
                  <div class="input-group-prepend">
                      <span class="input-group-text"><i class="fas fa-key"></i></span>
                  </div>
-                  <input class="form-control" name="password" type="password" pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{10,}$" placeholder="password" required maxlength="30" id="passwordInput">
+                  <input class="form-control" name="password" type="password" pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{10,}$" placeholder="Password" required maxlength="30" id="passwordInput">
 
              </div>
              <div style="padding-left: 15px;color: white;">
@@ -49,6 +49,8 @@
              <div class="form-group">
                  <input type="submit" value="Login" class="btn float-right login_btn">
              </div>
+             <br>
+             <a class="btn btn-warning" href='/'>&#10094;Back to Home</a> 
          </form>
     
      {% with messages = get_flashed_messages(category_filter=["greet"]) %}
