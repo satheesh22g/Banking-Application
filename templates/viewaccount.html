@@ -1,0 +1,80 @@
+{% extends "layout.html" %}
+
+{% block title %}Add Customer{% endblock %}
+
+{% block content %}
+<div class = "row mb-3">
+    <div class="card">
+        <div class="card-header">
+            View Account Details
+        </div>
+        <div class="card-body">
+            {% if data %}
+            <div class="row mb-4">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <td>
+                                Customer ID
+                            </td>
+                            <td>
+                                {{ data.cust_id }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Account Id
+                            </td>
+                            <td>
+                                {{ data.acc_id }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Account Type
+                            </td>
+                            <td>
+                                {{ data.acc_type }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                               Balance
+                            </td>
+                            <td>
+                                {{ data.balance }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="row mb-4">
+                <div class="form-group">
+                   
+                    <a href="{{ url_for('delaccount') }}">
+                        <button class="btn float-right">Delete</button>
+                    </a>
+                </div>
+            </div>
+            {%else%}
+            <form action="viewaccount" id="view_cust" method="POST">
+                <div class="form-group input-group mb-3">
+                    <label class="m-auto pr-3" for="cust_id">Customer Id</label>
+                   <input class="form-control" name="cust_id" id="cust_id" type="textfield" placeholder="Customer Id" maxlength="9">
+                </div>
+                <div class="form-group input-group mb-3">
+                    <label class="m-auto pr-3">Or</label>
+                </div>
+                <div class="form-group input-group mb-3">
+                    <label class="m-auto pr-3" for="acc_id">Account Id</label>
+                   <input class="form-control" name="acc_id" id="acc_id" type="textfield" placeholder="Account ID" minlength="9" maxlength="9">
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="View" class="btn">
+                </div>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

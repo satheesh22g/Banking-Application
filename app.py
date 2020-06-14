@@ -23,13 +23,11 @@ engine = create_engine('sqlite:///database.db',connect_args={'check_same_thread'
 Base.metadata.bind = engine
 db = scoped_session(sessionmaker(bind=engine))
 @app.route("/")
-def welcomepage():
-    return render_template("welcomepage.html")
-# def index():
-#     if 'user' in session:
-#         return redirect(url_for('dashboard'))
+def index():
+    if 'user' in session:
+        return redirect(url_for('dashboard'))
     
-#     return render_template("login.html" , login=True)
+    return render_template("login.html" , login=True)
     
 # MAIN
 @app.route("/dashboard")
@@ -152,6 +150,32 @@ def delaccount():
             flash(f'SSN id : {acc_id} is not present in database.','warning')
     return render_template('delaccount.html', addcustomer=True)
 
+@app.route("/viewaccount" , methods=["GET", "POST"])
+def viewaccount():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    if session['usert'] != "executive":
+        flash("You don't have access to this page","warning")
+        return redirect(url_for('dashboard'))
+    if session['usert']=="executive":
+        if request.method == "POST":
+            acc_id = request.form.get("acc_id")
+            cust_id = request.form.get("cust_id")
+            data = db.execute("SELECT * from accounts WHERE cust_id = :c or acc_id = :d", {"c": cust_id, "d": acc_id}).fetchone()
+            if data is not None:
+                print(data)
+                json_data = {
+                    'cust_id': data.cust_id,
+                    'acc_id': data.acc_id,
+                    'acc_type': data.acc_type,
+                    'balance': data.balance
+                }
+                return render_template('viewaccount.html', viewaccount=True, data=json_data)
+            
+            flash("Account is Deactivated or not found! Please,Check you input.", 'danger')
+
+    return render_template('viewaccount.html', viewaccount=True)
+
 # # Change Pasword
 # @app.route("/change-password", methods=["GET", "POST"])
 # def changepass():
@@ -195,7 +219,7 @@ def delaccount():
 @app.route("/logout")
 def logout():
     session.pop('user', None)
-    return redirect(url_for('login'))
+    return redirect(url_for('index'))
 # LOGIN
 @app.route("/login", methods=["GET", "POST"])
 def login():
