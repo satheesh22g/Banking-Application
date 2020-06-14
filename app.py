@@ -168,6 +168,32 @@ def delaccount():
             flash(f'Account with id : {acc_id} is not present in database.','warning')
     return render_template('delaccount.html', delaccount=True)
 
+@app.route("/viewaccount" , methods=["GET", "POST"])
+def viewaccount():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    if session['usert'] != "executive":
+        flash("You don't have access to this page","warning")
+        return redirect(url_for('dashboard'))
+    if session['usert']=="executive":
+        if request.method == "POST":
+            acc_id = request.form.get("acc_id")
+            cust_id = request.form.get("cust_id")
+            data = db.execute("SELECT * from accounts WHERE cust_id = :c or acc_id = :d", {"c": cust_id, "d": acc_id}).fetchone()
+            if data is not None:
+                print(data)
+                json_data = {
+                    'cust_id': data.cust_id,
+                    'acc_id': data.acc_id,
+                    'acc_type': data.acc_type,
+                    'balance': data.balance
+                }
+                return render_template('viewaccount.html', viewaccount=True, data=json_data)
+
+            flash("Account is Deactivated or not found! Please,Check you input.", 'danger')
+
+    return render_template('viewaccount.html', viewaccount=True)
+
 # # Change Pasword
 # @app.route("/change-password", methods=["GET", "POST"])
 # def changepass():
