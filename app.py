@@ -54,6 +54,11 @@ def addcustomer():
             city = request.form.get("city")
             result = db.execute("SELECT * from customers WHERE cust_ssn_id = :c", {"c": cust_ssn_id}).fetchone()
             if result is None :
+                # result = db.query(Customers).count()
+                # result = int(result)
+                # print(result,type(result))
+                # if result == 0 :
+                #     query = Customers(cust_id=110110000,cust_ssn_id=cust_ssn_id,name=name,address=address,age=age,state=state,city=city,status='activate')
                 query = Customers(cust_ssn_id=cust_ssn_id,name=name,address=address,age=age,state=state,city=city,status='activate')
                 # result = db.execute("INSERT INTO customers (cust_ssn_id,name,address,age,state,city) VALUES (:c,:n,:add,:a,:s,:city)", {"c": cust_ssn_id,"n":name,"add":address,"a": age,"s":state,"city":city})
                 db.add(query)
@@ -62,7 +67,7 @@ def addcustomer():
                     flash("Data is not inserted","danger")
                 else:
                     flash(f"Customer {query.name} is created with customer ID : {query.cust_id}.","success")
-                    return redirect(url_for('dashboard'))
+                    return redirect(url_for('viewcustomer'))
             flash(f'SSN id : {cust_ssn_id} is already present in database.','warning')
         
     return render_template('addcustomer.html', addcustomer=True)
