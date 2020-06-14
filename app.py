@@ -22,9 +22,9 @@ app.secret_key = os.urandom(24)
 engine = create_engine('sqlite:///database.db',connect_args={'check_same_thread': False},echo=True)
 Base.metadata.bind = engine
 db = scoped_session(sessionmaker(bind=engine))
-@app.route("/")
-def welcomepage():
-    return render_template("welcomepage.html")
+# @app.route("/")
+# def welcomepage():
+#     return render_template("welcomepage.html")
 # def index():
 #     if 'user' in session:
 #         return redirect(url_for('dashboard'))
@@ -32,12 +32,14 @@ def welcomepage():
 #     return render_template("login.html" , login=True)
     
 # MAIN
+@app.route('/')
 @app.route("/dashboard")
 def dashboard():
-    if 'user' not in session:
-        return redirect(url_for('index'))
-    else:
-        return render_template("home.html" , home=True)
+    return render_template("home.html", home=True)
+    # if 'user' not in session:
+    #     return redirect(url_for('index'))
+    # else:
+    #     return render_template("home.html" , home=True)
 
 @app.route("/addcustomer" , methods=["GET", "POST"])
 def addcustomer():
