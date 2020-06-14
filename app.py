@@ -105,12 +105,67 @@ def viewcustomer():
     return render_template('viewcustomer.html', viewcustomer=True)
 
 @app.route('/editcustomer')
-def editcustomer():
-    return redirect(url_for('dashboard'))
+@app.route('/editcustomer/<cust_id>', methods=["GET", "POST"])
+def editcustomer(cust_id=None):
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    if session['usert'] != "executive":
+        flash("You don't have access to this page","warning")
+        return redirect(url_for('dashboard'))
+    if session['usert']=="executive":
+        if cust_id is not None:
+            if request.method != "POST":
+                cust_id = int(cust_id)
+                data = db.execute("SELECT * from customers WHERE cust_id = :c", {"c": cust_id}).fetchone()
+                if data is not None and data.status != 'deactivate':
+                    print(data)
+                    json_data = {
+                        'cust_id': data.cust_id,
+                        'cust_ssn_id': data.cust_ssn_id,
+                        'name': data.name,
+                        'address': data.address,
+                        'age': data.age,
+                        'state': data.state,
+                        'city': data.city
+                    }
+                    return render_template('editcustomer.html', editcustomer=True, data=json_data)
+                else:
+                    flash('Customer is not present in database.','warning')
+            else:
+                cust_id = int(cust_id)
+                name = request.form.get("name")
+                address = request.form.get("address")
+                age= int(request.form.get("age"))
+                result = db.execute("SELECT * from customers WHERE cust_id = :c and status = 'activate'", {"c": cust_id}).fetchone()
+                if result is not None :
+                    result = db.execute("UPDATE customers SET name = :n , address = :add , age = :ag WHERE cust_id = :a", {"n": name,"add": address,"ag": age,"a": cust_id})
+                    db.commit()
+                    flash(f"Customer data are updated successfully.","success")
+                else:
+                    flash('Invalid customer Id. Please, check customer Id.','warning')
+
+    return redirect(url_for('viewcustomer'))
 
 @app.route('/deletecustomer')
-def deletecustomer():
-    return redirect(url_for('dashboard'))
+@app.route('/deletecustomer/<cust_id>')
+def deletecustomer(cust_id=None):
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    if session['usert'] != "executive":
+        flash("You don't have access to this page","warning")
+        return redirect(url_for('dashboard'))
+    if session['usert']=="executive":
+        if cust_id is not None:
+            cust_id = int(cust_id)
+            result = db.execute("SELECT * from customers WHERE cust_id = :a and status = 'activate'", {"a": cust_id}).fetchone()
+            if result is not None :
+                # delete from accounts WHERE acc_id = :a and acc_type=:at", {"a": acc_id,"at":acc_type}
+                query = db.execute("UPDATE customers SET status='deactivate' WHERE cust_id = :a", {"a": cust_id})
+                db.commit()
+                flash(f"Customer is deactivated.","success")
+                return redirect(url_for('dashboard'))
+            flash(f'Customer with id : {acc_id} is already deactivated or not present in database.','warning')
+    return redirect(url_for('viewcustomer'))
 
 @app.route("/addaccount" , methods=["GET", "POST"])
 def addaccount():

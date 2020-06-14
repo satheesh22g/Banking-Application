@@ -3,15 +3,15 @@
 {% block title %}Add Customer{% endblock %}
 
 {% block content %}
-<div class = "row mb-3">
-    <div class="card">
+<div class = "row col-md-8 my-5">
+    <div class="card col-md-8 mx-auto px-0">
         <div class="card-header">
             View Customer Details
         </div>
         <div class="card-body">
             {% if data %}
             <div class="row mb-4">
-                <table class="table">
+                <table class="col-md-12">
                     <tbody>
                         <tr>
                             <td>
@@ -73,31 +73,63 @@
                 </table>
             </div>
             <div class="row mb-4">
-                <div class="form-group">
-                    <a href="{{ url_for('editcustomer') }}">
-                        <button class="btn float-left">Edit</button>
-                    </a>
-                    <a href="{{ url_for('deletecustomer') }}">
-                        <button class="btn float-right">Delete</button>
-                    </a>
+                <div class="form-group col-md-12">
+                    <div class="float-left">
+                        <a href="{{ url_for('editcustomer',cust_id=data.cust_id ) }}">
+                            <button class="btn">Edit</button>
+                        </a>
+                    </div>
+                    <div class="float-right">
+                        <a href="{{ url_for('deletecustomer',cust_id=data.cust_id ) }}">
+                            <button class="btn" onclick="alert('Are you Sure, You want to delete this customer?')">Delete</button>
+                        </a>
+                    </div>
                 </div>
             </div>
             {%else%}
-            <form action="viewcustomer" id="view_cust" method="POST">
-                <div class="form-group input-group mb-3">
-                    <label class="m-auto pr-3" for="cust_id">Customer Id</label>
-                   <input class="form-control" name="cust_id" id="cust_id" type="textfield" placeholder="Customer Id" maxlength="9">
-                </div>
-                <div class="form-group input-group mb-3">
-                    <label class="m-auto pr-3">Or</label>
-                </div>
-                <div class="form-group input-group mb-3">
-                    <label class="m-auto pr-3" for="cust_ssn_id">Customer SSN Id</label>
-                   <input class="form-control" name="cust_ssn_id" id="cust_ssn_id" type="textfield" placeholder="Customer SSN ID" minlength="9" maxlength="9">
-                </div>
-                <div class="form-group">
-                    <input type="submit" value="View" class="btn">
-                </div>
+            <form action="{{ url_for('viewcustomer') }}" id="view_cust" method="POST">
+                <table class="col-md-12">
+                    <tbody>
+                        <tr>
+                            <th>
+                                <div class="form-group input-group">
+                                    <label class="m-auto float-left" for="cust_id">Customer Id</label>
+                                </div>
+                            </th>
+                            <th>
+                                <div class="form-group input-group">
+                                    <input class="form-control" name="cust_id" id="cust_id" type="textfield" placeholder="Customer Id" maxlength="9">
+                                </div>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th colspan="2">
+                                <div class="form-group input-group">
+                                    <label class="m-auto">or</label>
+                                </div>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>
+                                <div class="form-group input-group">
+                                    <label class="m-auto float-left" for="cust_ssn_id">Customer SSN Id</label>
+                                </div>
+                            </th>
+                            <th>
+                                <div class="form-group input-group">
+                                   <input class="form-control" name="cust_ssn_id" id="cust_ssn_id" type="textfield" placeholder="Customer SSN Id" maxlength="9">
+                                </div>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th colspan="2">
+                                <div class="form-group input-group">
+                                    <input type="submit" value="View" class="btn mx-auto">
+                                </div>
+                            </th>
+                        </tr>
+                    </tbody>
+                </table>
             </form>
             {% endif %}
         </div>
