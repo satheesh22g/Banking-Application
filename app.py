@@ -185,9 +185,9 @@ def addaccount():
                 if result is None:
                     result = db.query(Accounts).count()
                     if result == 0 :
-                        query = Accounts(acc_id=360110000,acc_type=acc_type,balance=amount,status='activate',cust_id=cust_id)
+                        query = Accounts(acc_id=360110000,acc_type=acc_type,balance=amount,cust_id=cust_id,status='active')
                     else:
-                        query = Accounts(acc_type=acc_type,balance=amount,status='activate',cust_id=cust_id)
+                        query = Accounts(acc_type=acc_type,balance=amount,cust_id=cust_id,status='active')
                     db.add(query)
                     db.commit()
                     if query.acc_id is None:
