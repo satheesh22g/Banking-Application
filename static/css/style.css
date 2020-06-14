@@ -51,7 +51,7 @@ h1 {
 p {
     padding: 10px;
     font-weight: 100;
-    color: #fff;
+    /* color: #fff; */
 }
 .navbar {
     /* background: #0000FF; */
@@ -379,7 +379,7 @@ p {
   border-bottom: 2px solid #000000;
   padding: 7px;
 }
-tr:hover {background-color:#00BFFF;}
+/* tr:hover {background-color:#00BFFF;} */
 .circle-border {
     display: inline-block;
     -webkit-border-radius: 500px;
