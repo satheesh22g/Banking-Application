@@ -30,8 +30,8 @@ class Accounts(Base):
     acc_id = Column(Integer,primary_key=True,autoincrement=True)
     acc_type = Column(String(250),nullable=False)
     balance = Column(Integer, nullable=False)
-    status = Column(String(250), nullable=False)
     cust_id = Column(Integer, ForeignKey('customers.cust_id'))
+    status = Column(String(250), nullable=False)
     customers = relationship(Customers)
 
 engine = create_engine('sqlite:///database.db')

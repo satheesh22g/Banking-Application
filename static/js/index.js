@@ -2,7 +2,7 @@ $(document).ready(function() {
 
     setTimeout(function() {
         $('.alert').fadeOut('slow');
-    }, 2000); // <-- time in milliseconds
+    }, 5000); // <-- time in milliseconds
 
     $('#showPass').click(function(){
         var x = $("#passwordInput")[0]
@@ -23,7 +23,7 @@ $(document).ready(function() {
         $("#city")[0].value = "";
     });
 
-    $('#cust_ssn_id, #age').keypress(function(event){
+    $('#cust_ssn_id, #age, #cust_id, #acc_id, #amount').keypress(function(event){
         if(event.which = 8 && isNaN(String.fromCharCode(event.which))){
             event.preventDefault(); //stop character from entering input
         }

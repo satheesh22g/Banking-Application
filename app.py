@@ -58,15 +58,19 @@ def addcustomer():
             city = request.form.get("city")
             result = db.execute("SELECT * from customers WHERE cust_ssn_id = :c", {"c": cust_ssn_id}).fetchone()
             if result is None :
-                query = Customers(cust_ssn_id=cust_ssn_id,name=name,address=address,age=age,state=state,city=city,status='activate')
+                result = db.query(Customers).count()
+                if result == 0 :
+                    query = Customers(cust_id=110110000,cust_ssn_id=cust_ssn_id,name=name,address=address,age=age,state=state,city=city,status='activate')
+                else:
+                    query = Customers(cust_ssn_id=cust_ssn_id,name=name,address=address,age=age,state=state,city=city,status='activate')
                 # result = db.execute("INSERT INTO customers (cust_ssn_id,name,address,age,state,city) VALUES (:c,:n,:add,:a,:s,:city)", {"c": cust_ssn_id,"n":name,"add":address,"a": age,"s":state,"city":city})
                 db.add(query)
                 db.commit()
                 if query.cust_id is None:
-                    flash("Data is not inserted","danger")
+                    flash("Data is not inserted! Check you input.","danger")
                 else:
                     flash(f"Customer {query.name} is created with customer ID : {query.cust_id}.","success")
-                    return redirect(url_for('dashboard'))
+                    return redirect(url_for('viewcustomer'))
             flash(f'SSN id : {cust_ssn_id} is already present in database.','warning')
         
     return render_template('addcustomer.html', addcustomer=True)
@@ -117,22 +121,31 @@ def addaccount():
         return redirect(url_for('dashboard'))
     if session['usert']=="executive":
         if request.method == "POST":
-            cust_id = request.form.get("cust_id")
+            cust_id = int(request.form.get("cust_id"))
             acc_type = request.form.get("acc_type")
-            amount= int(request.form.get("amount"))
-            result = db.execute("SELECT * from customers WHERE cust_ssn_id = :c", {"c": cust_id}).fetchone()
+            amount= float(request.form.get("amount"))
+            result = db.execute("SELECT * from customers WHERE cust_id = :c", {"c": cust_id}).fetchone()
             if result is not None :
-                query = Accounts(acc_type=acc_type,balance=amount,cust_id=cust_id)
-                db.add(query)
-                db.commit()
-                if query.cust_id is None:
-                    flash("Data is not inserted","danger")
+                result = db.execute("SELECT * from accounts WHERE cust_id = :c and acc_type = :at", {"c": cust_id, "at": acc_type}).fetchone()
+                if result is None:
+                    result = db.query(Accounts).count()
+                    if result == 0 :
+                        query = Accounts(acc_id=360110000,acc_type=acc_type,balance=amount,cust_id=cust_id,status='activate')
+                    else:
+                        query = Accounts(acc_type=acc_type,balance=amount,cust_id=cust_id,status='activate')
+                    db.add(query)
+                    db.commit()
+                    if query.acc_id is None:
+                        flash("Data is not inserted! Check you input.","danger")
+                    else:
+                        flash(f"Customer {query.acc_id} is created with customer ID : {query.cust_id}.","success")
+                        return redirect(url_for('dashboard'))
                 else:
-                    flash(f"Customer {query.acc_id} is created with customer ID : {query.cust_id}.","success")
-                    return redirect(url_for('dashboard'))
-            flash(f'SSN id : {cust_id} is not present in database.','warning')
+                    flash(f'Customer with id : {cust_id} has already {acc_type} account.','warning')
+            else:
+                flash(f'Customer with id : {cust_id} is not present in database.','warning')
 
-    return render_template('addaccount.html', addcustomer=True)
+    return render_template('addaccount.html', addaccount=True)
 
 @app.route("/delaccount" , methods=["GET", "POST"])
 def delaccount():
@@ -147,12 +160,39 @@ def delaccount():
             acc_type = request.form.get("acc_type")
             result = db.execute("SELECT * from accounts WHERE acc_id = :a", {"a": acc_id}).fetchone()
             if result is not None :
-                query = db.execute("delete from accounts WHERE acc_id = :a and acc_type=:at", {"a": acc_id,"at":acc_type})
+                # delete from accounts WHERE acc_id = :a and acc_type=:at", {"a": acc_id,"at":acc_type}
+                query = db.execute("UPDATE accounts SET status='deactivate' WHERE acc_id = :a and acc_type=:at", {"a": acc_id,"at":acc_type})
                 db.commit()
-                flash(f"Customer account is deleted.","success")
+                flash(f"Customer account is deactivated.","success")
                 return redirect(url_for('dashboard'))
-            flash(f'SSN id : {acc_id} is not present in database.','warning')
-    return render_template('delaccount.html', addcustomer=True)
+            flash(f'Account with id : {acc_id} is not present in database.','warning')
+    return render_template('delaccount.html', delaccount=True)
+
+@app.route("/viewaccount" , methods=["GET", "POST"])
+def viewaccount():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    if session['usert'] != "executive":
+        flash("You don't have access to this page","warning")
+        return redirect(url_for('dashboard'))
+    if session['usert']=="executive":
+        if request.method == "POST":
+            acc_id = request.form.get("acc_id")
+            cust_id = request.form.get("cust_id")
+            data = db.execute("SELECT * from accounts WHERE cust_id = :c or acc_id = :d", {"c": cust_id, "d": acc_id}).fetchone()
+            if data is not None:
+                print(data)
+                json_data = {
+                    'cust_id': data.cust_id,
+                    'acc_id': data.acc_id,
+                    'acc_type': data.acc_type,
+                    'balance': data.balance
+                }
+                return render_template('viewaccount.html', viewaccount=True, data=json_data)
+
+            flash("Account is Deactivated or not found! Please,Check you input.", 'danger')
+
+    return render_template('viewaccount.html', viewaccount=True)
 
 # # Change Pasword
 # @app.route("/change-password", methods=["GET", "POST"])
