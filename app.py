@@ -142,14 +142,15 @@ def delaccount():
             acc_id = int(request.form.get("acc_id"))
             acc_type = request.form.get("acc_type")
             result = db.execute("SELECT * from accounts WHERE acc_id = :a", {"a": acc_id}).fetchone()
-            if result is None :
-                query = Customers(acc_id=acc_id,acc_type=acc_type)
-                db.delete(query)
+            if result is not None :
+                query = db.execute("delete from accounts WHERE acc_id = :a and acc_type=:at", {"a": acc_id,"at":acc_type})
                 db.commit()
-                flash(f"Customer {query.name} is deleted with account ID : {query.acc_id}.","success")
+                flash(f"Customer account is deleted.","success")
+                print(1)
                 return redirect(url_for('dashboard'))
             flash(f'SSN id : {acc_id} is not present in database.','warning')
-    return render_template('addaccount.html', addcustomer=True)
+            print(2)
+    return render_template('delaccount.html', addcustomer=True)
 
 # # Change Pasword
 # @app.route("/change-password", methods=["GET", "POST"])
