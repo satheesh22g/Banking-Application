@@ -9,6 +9,7 @@
             <li class="nav-item"><a href="{{ url_for('addcustomer') }}" class="nav-link {% if addcustomer %}active{% endif %}">Add Customer</a></li>
             <li class="nav-item"><a href="{{ url_for('viewcustomer') }}" class="nav-link {% if viewcustomer %}active{% endif %}">View Customer</a></li>
             <li class="nav-item"><a href="{{ url_for('addaccount') }}" class="nav-link {% if addaccount %}active{% endif %}">Add Account</a></li>
+            <li class="nav-item"><a href="{{ url_for('viewaccount') }}" class="nav-link {% if viewaccount %}active{% endif %}">View Account</a></li>
           
             {% endif %}
         <li class="nav-item"><a href="{{ url_for('logout') }}" class="nav-link">Logout</a></li>

@@ -130,19 +130,23 @@ def addaccount():
                 if result is None:
                     result = db.query(Accounts).count()
                     if result == 0 :
-                        query = Accounts(acc_id=360110000,acc_type=acc_type,balance=amount,cust_id=cust_id,status='activate')
+                        query = Accounts(acc_id=360110000,acc_type=acc_type,balance=amount,status='activate',cust_id=cust_id)
                     else:
-                        query = Accounts(acc_type=acc_type,balance=amount,cust_id=cust_id,status='activate')
+                        query = Accounts(acc_type=acc_type,balance=amount,status='activate',cust_id=cust_id)
                     db.add(query)
                     db.commit()
                     if query.acc_id is None:
+                        print(1)
                         flash("Data is not inserted! Check you input.","danger")
                     else:
                         flash(f"Customer {query.acc_id} is created with customer ID : {query.cust_id}.","success")
+                        print(2)
                         return redirect(url_for('dashboard'))
                 else:
+                    print(3)
                     flash(f'Customer with id : {cust_id} has already {acc_type} account.','warning')
             else:
+                print(4)
                 flash(f'Customer with id : {cust_id} is not present in database.','warning')
 
     return render_template('addaccount.html', addaccount=True)
