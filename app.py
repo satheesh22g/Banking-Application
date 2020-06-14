@@ -23,11 +23,13 @@ engine = create_engine('sqlite:///database.db',connect_args={'check_same_thread'
 Base.metadata.bind = engine
 db = scoped_session(sessionmaker(bind=engine))
 @app.route("/")
-def index():
-    if 'user' in session:
-        return redirect(url_for('dashboard'))
+def welcomepage():
+    return render_template("welcomepage.html")
+# def index():
+#     if 'user' in session:
+#         return redirect(url_for('dashboard'))
     
-    return render_template("login.html" , login=True)
+#     return render_template("login.html" , login=True)
     
 # MAIN
 @app.route("/dashboard")
@@ -195,7 +197,7 @@ def delaccount():
 @app.route("/logout")
 def logout():
     session.pop('user', None)
-    return redirect(url_for('index'))
+    return redirect(url_for('login'))
 # LOGIN
 @app.route("/login", methods=["GET", "POST"])
 def login():
