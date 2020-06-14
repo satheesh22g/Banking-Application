@@ -27,10 +27,10 @@ class Customers(Base):
 
 class Accounts(Base):
     __tablename__='accounts'
-    acc_id = Column(String(250),primary_key=True)
+    acc_id = Column(Integer,primary_key=True,autoincrement=True)
     acc_type = Column(String(250),nullable=False)
     balance = Column(Integer, nullable=False)
-    cust_id = Column(String, ForeignKey('customers.cust_id'))
+    cust_id = Column(Integer, ForeignKey('customers.cust_id'))
     customers = relationship(Customers)
 
 engine = create_engine('sqlite:///database.db')
