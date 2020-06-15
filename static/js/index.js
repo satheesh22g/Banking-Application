@@ -45,4 +45,25 @@ $(document).ready(function() {
             }
           }
     })
+
+    $('.refresh').click(function(event){
+        event.preventDefault()
+        target = event.target
+        cust_id = parseInt(target.dataset.cust_id)
+        var data = {"cust_id": cust_id}
+        $.ajax({
+            type: "POST",
+            url: "/api/v1/customerlog",
+            dataType: 'json',
+            data: JSON.stringify(data),
+            contentType:"application/json; charset=UTF-8"
+        }).done(function(result){
+            console.log(result)
+            parrent_ele = target.parentElement.parentElement
+            parrent_ele.children[2].innerHTML = result.message
+            parrent_ele.children[3].innerHTML = result.date
+        }).fail(function(error){
+            console.log(error)
+        })
+    })
 });
