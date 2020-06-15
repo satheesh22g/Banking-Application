@@ -72,7 +72,6 @@ def addcustomer():
                     temp = CustomerLog(cust_id=query.cust_id,log_message="Customer Created")
                     db.add(temp)
                     db.commit()
-                    print(temp)
                     flash(f"Customer {query.name} is created with customer ID : {query.cust_id}.","success")
                     return redirect(url_for('viewcustomer'))
             flash(f'SSN id : {cust_ssn_id} is already present in database.','warning')
@@ -134,7 +133,6 @@ def editcustomer(cust_id=None):
                     temp = CustomerLog(cust_id=cust_id,log_message="Customer Data Updated")
                     db.add(temp)
                     db.commit()
-                    print(temp)
                     flash(f"Customer data are updated successfully.","success")
                 else:
                     flash('Invalid customer Id. Please, check customer Id.','warning')
@@ -160,7 +158,6 @@ def deletecustomer(cust_id=None):
                 temp = CustomerLog(cust_id=cust_id,log_message="Customer Deactivated")
                 db.add(temp)
                 db.commit()
-                print(temp)
                 flash(f"Customer is deactivated.","success")
                 return redirect(url_for('dashboard'))
             else:
@@ -185,7 +182,6 @@ def activatecustomer(cust_id=None):
                 temp = CustomerLog(cust_id=cust_id,log_message="Customer Activated")
                 db.add(temp)
                 db.commit()
-                print(temp)
                 flash(f"Customer is activated.","success")
                 return redirect(url_for('dashboard'))
             flash(f'Customer with id : {cust_id} is already activated or not present in database.','warning')
@@ -199,6 +195,7 @@ def customerstatus():
         flash("You don't have access to this page","warning")
         return redirect(url_for('dashboard'))
     if session['usert']=="executive":
+        # join query to get one log message per customer id
         data = db.execute("SELECT customers.cust_id as id, customers.cust_ssn_id as ssn_id, customerlog.log_message as message, customerlog.time_stamp as date from (select cust_id,log_message,time_stamp from customerlog group by cust_id ORDER by time_stamp desc) as customerlog JOIN customers ON customers.cust_id = customerlog.cust_id group by customerlog.cust_id order by customerlog.time_stamp desc").fetchall()
         if data is not None:
             return render_template('customerstatus.html',customerstatus=True , data=data)
@@ -275,7 +272,6 @@ def viewaccount():
             cust_id = request.form.get("cust_id")
             data = db.execute("SELECT * from accounts WHERE cust_id = :c or acc_id = :d", {"c": cust_id, "d": acc_id}).fetchone()
             if data is not None:
-                print(data)
                 json_data = {
                     'cust_id': data.cust_id,
                     'acc_id': data.acc_id,
@@ -343,7 +339,6 @@ def login():
         passw = request.form.get("password").encode('utf-8')
         result = db.execute("SELECT * FROM users WHERE id = :u", {"u": usern}).fetchone()
         if result is not None:
-            print(result['password'])
             if bcrypt.check_password_hash(result['password'], passw) is True:
                 session['user'] = usern
                 session['namet'] = result.name
@@ -368,7 +363,6 @@ def api():
 @app.route('/customerlog', methods=["GET", "POST"])
 @app.route('/api/v1/customerlog', methods=["GET", "POST"])
 def customerlog():
-    print('function called')
     if 'user' not in session:
         flash("Please login","warning")
         return redirect(url_for('login'))
