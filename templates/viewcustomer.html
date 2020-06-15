@@ -80,6 +80,7 @@
                     </tbody>
                 </table>
             </div>
+            {% if session['usert']!="executive" %}
             <div class="row mb-4">
                 <div class="form-group col-md-12">
                     <div class="float-left">
@@ -102,6 +103,7 @@
                     {% endif %}
                 </div>
             </div>
+            {%endif%}
             {%else%}
             <form action="{{ url_for('viewcustomer') }}" id="view_cust" method="POST">
                 <table class="col-md-12">

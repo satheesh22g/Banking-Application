@@ -7,7 +7,7 @@ from flask_session import Session
 from database import Base,Accounts,Customers,Users,CustomerLog
 from sqlalchemy import create_engine, exc
 from sqlalchemy.orm import scoped_session, sessionmaker
-
+import datetime
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
@@ -101,6 +101,9 @@ def viewcustomer(cust_id=None):
                 return render_template('viewcustomer.html', viewcustomer=True, data=data)
             
             flash("Customer not found! Please,Check you input.", 'danger')
+    else:
+        flash("You don't have access to this page","warning")
+        return redirect(url_for('dashboard'))
 
     return render_template('viewcustomer.html', viewcustomer=True)
 
@@ -215,15 +218,16 @@ def addaccount():
             cust_id = int(request.form.get("cust_id"))
             acc_type = request.form.get("acc_type")
             amount= float(request.form.get("amount"))
+            message = "Account successfully created"
             result = db.execute("SELECT * from customers WHERE cust_id = :c", {"c": cust_id}).fetchone()
             if result is not None :
                 result = db.execute("SELECT * from accounts WHERE cust_id = :c and acc_type = :at", {"c": cust_id, "at": acc_type}).fetchone()
                 if result is None:
                     result = db.query(Accounts).count()
                     if result == 0 :
-                        query = Accounts(acc_id=360110000,acc_type=acc_type,balance=amount,cust_id=cust_id,status='active')
+                        query = Accounts(acc_id=360110000,acc_type=acc_type,balance=amount,cust_id=cust_id,status='active',message=message,last_update=datetime.datetime.now())
                     else:
-                        query = Accounts(acc_type=acc_type,balance=amount,cust_id=cust_id,status='active')
+                        query = Accounts(acc_type=acc_type,balance=amount,cust_id=cust_id,status='active',message=message,last_update=datetime.datetime.now())
                     db.add(query)
                     db.commit()
                     if query.acc_id is None:
@@ -252,9 +256,9 @@ def delaccount():
             result = db.execute("SELECT * from accounts WHERE acc_id = :a", {"a": acc_id}).fetchone()
             if result is not None :
                 # delete from accounts WHERE acc_id = :a and acc_type=:at", {"a": acc_id,"at":acc_type}
-                query = db.execute("UPDATE accounts SET status='deactivate' WHERE acc_id = :a and acc_type=:at", {"a": acc_id,"at":acc_type})
+                query = db.execute("UPDATE accounts SET status='deactive' WHERE acc_id = :a and acc_type=:at", {"a": acc_id,"at":acc_type})
                 db.commit()
-                flash(f"Customer account is deactivated.","success")
+                flash(f"Customer account is Deactivated Successfully.","success")
                 return redirect(url_for('dashboard'))
             flash(f'Account with id : {acc_id} is not present in database.','warning')
     return render_template('delaccount.html', delaccount=True)
@@ -262,27 +266,55 @@ def delaccount():
 @app.route("/viewaccount" , methods=["GET", "POST"])
 def viewaccount():
     if 'user' not in session:
+        return redirect(url_for('login'))        
+    if session['usert']=="executive" or session['usert']=="teller" or session['usert']=="cashier":
+        if request.method == "POST":
+            acc_id = request.form.get("acc_id")
+            cust_id = request.form.get("cust_id")
+            data = db.execute("SELECT * from accounts WHERE cust_id = :c or acc_id = :d", {"c": cust_id, "d": acc_id}).fetchall()
+            if data is not None:
+                return render_template('viewaccount.html', viewaccount=True, data=data)
+            else:
+                flash("Account is Deactivated or not found! Please,Check you input.", 'danger')
+    else:
+        flash("You don't have access to this page","warning")
+        return redirect(url_for('dashboard'))
+    return render_template('viewaccount.html', viewaccount=True)
+
+@app.route("/viewaccount" , methods=["GET", "POST"])
+def viewaccount():
+    if 'user' not in session:
+        return redirect(url_for('login'))        
+    if session['usert']=="executive" or session['usert']=="teller" or session['usert']=="cashier":
+        if request.method == "POST":
+            acc_id = request.form.get("acc_id")
+            cust_id = request.form.get("cust_id")
+            data = db.execute("SELECT * from accounts WHERE cust_id = :c or acc_id = :d", {"c": cust_id, "d": acc_id}).fetchall()
+            if data is not None:
+                return render_template('viewaccount.html', viewaccount=True, data=data)
+            else:
+                flash("Account not found! Please,Check you input.", 'danger')
+    else:
+        flash("You don't have access to this page","warning")
+        return redirect(url_for('dashboard'))
+    return render_template('viewaccount.html', viewaccount=True)
+
+@app.route("/viewaccountstatus" , methods=["GET", "POST"])
+def viewaccountstatus():
+    if 'user' not in session:
         return redirect(url_for('login'))
     if session['usert'] != "executive":
         flash("You don't have access to this page","warning")
         return redirect(url_for('dashboard'))
     if session['usert']=="executive":
-        if request.method == "POST":
-            acc_id = request.form.get("acc_id")
-            cust_id = request.form.get("cust_id")
-            data = db.execute("SELECT * from accounts WHERE cust_id = :c or acc_id = :d", {"c": cust_id, "d": acc_id}).fetchone()
-            if data is not None:
-                json_data = {
-                    'cust_id': data.cust_id,
-                    'acc_id': data.acc_id,
-                    'acc_type': data.acc_type,
-                    'balance': data.balance
-                }
-                return render_template('viewaccount.html', viewaccount=True, data=json_data)
+        data = db.execute("select * from accounts").fetchall()
 
-            flash("Account is Deactivated or not found! Please,Check you input.", 'danger')
+        if data is not None:
+            return render_template('viewaccountstatus.html', viewaccount=True, data=data)
+        else:
+            flash("Accounts are not found!", 'danger')
+    return render_template('viewaccountstatus.html', viewaccount=True)
 
-    return render_template('viewaccount.html', viewaccount=True)
 
 # # Change Pasword
 # @app.route("/change-password", methods=["GET", "POST"])

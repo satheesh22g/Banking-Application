@@ -38,8 +38,11 @@ class Accounts(Base):
     acc_type = Column(String(250),nullable=False)
     balance = Column(Integer, nullable=False)
     cust_id = Column(Integer, ForeignKey('customers.cust_id'))
-    status = Column(String(250), nullable=False)
     customers = relationship(Customers)
+    status = Column(String(250), nullable=False)
+    message =  Column(String(250))
+    last_update = Column(DateTime)
 
+    
 engine = create_engine('sqlite:///database.db')
 Base.metadata.create_all(engine)
