@@ -1,0 +1,68 @@
+{% extends "layout.html" %}
+
+{% block title %}Add Customer{% endblock %}
+
+{% block content %}
+<html>
+    <head>
+        <script src="//code.jquery.com/jquery-1.6.2.min.js"></script>
+    </head>
+    <body>
+        <div class = "row mb-3">
+            <div class="card">
+                <div class="card-header">
+                    Account Status
+                </div>
+                <div class="card-body">
+                    {% if data %}
+                    <table class="table">
+                        <thead>
+                          <tr>
+                            <th> Customer Id</th>
+                            <th> Account Id</th>
+                            <th> Account Type</th>
+                            <th> Account Status</th>
+                            <th> Message</th>
+                            <th>  Last Update</th>
+                            <th> Operations</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in data %}
+                          <tr>
+                            <td> {{ i.cust_id }}</td>
+                            <td>  {{ i.acc_id }}</td>
+                            <td> {{ i.acc_type }}</td>
+                            <td>   {{ i.status }}</td>
+                            <td>   {{ i.message }}</td>
+                            <td>   {{ i.last_update }}</td>
+                            <td><a href="" id="btn_refresh">Refresh</a></td>
+                          </tr>
+                       
+                            
+                          {%endfor%}
+                         
+                        </tbody>
+                      </table>
+                   
+                    </div>
+                    <div class="row mb-4">
+                        <div class="form-group">
+                           
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <script>
+            $(document).ready(function() {
+
+            $("#btn_refresh").click(function(){
+                location.reload(false); 
+                });
+               }); </script>
+        {% endblock %}
+        
+    </body>
+</html>
