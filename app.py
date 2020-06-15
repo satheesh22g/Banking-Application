@@ -235,9 +235,10 @@ def viewaccount():
             acc_id = request.form.get("acc_id")
             cust_id = request.form.get("cust_id")
             data = db.execute("SELECT * from accounts WHERE cust_id = :c or acc_id = :d", {"c": cust_id, "d": acc_id}).fetchall()
-            return render_template('viewaccount.html', viewaccount=True, data=data)
-    flash("Account is Deactivated or not found! Please,Check you input.", 'danger')
-
+            if data is not None:
+                return render_template('viewaccount.html', viewaccount=True, data=data)
+            else:
+                flash("Account is Deactivated or not found! Please,Check you input.", 'danger')
     return render_template('viewaccount.html', viewaccount=True)
 
 # # Change Pasword
