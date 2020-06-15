@@ -217,9 +217,9 @@ def delaccount():
             result = db.execute("SELECT * from accounts WHERE acc_id = :a", {"a": acc_id}).fetchone()
             if result is not None :
                 # delete from accounts WHERE acc_id = :a and acc_type=:at", {"a": acc_id,"at":acc_type}
-                query = db.execute("Delete from accounts WHERE acc_id = :a and acc_type=:at", {"a": acc_id,"at":acc_type})
+                query = db.execute("UPDATE accounts SET status='deactive' WHERE acc_id = :a and acc_type=:at", {"a": acc_id,"at":acc_type})
                 db.commit()
-                flash(f"Customer account is Deleted.","success")
+                flash(f"Customer account is Deactivated Successfully.","success")
                 return redirect(url_for('dashboard'))
             flash(f'Account with id : {acc_id} is not present in database.','warning')
     return render_template('delaccount.html', delaccount=True)

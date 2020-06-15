@@ -51,7 +51,7 @@
             </div>
             <div class="row mb-4">
                 <div class="form-group">
-                    {% if session['usert']!="executive" %}
+                    {% if session['usert']=="executive" %}
                     <a href="{{ url_for('delaccount') }}">
                         <button class="btn float-right">Delete</button>
                     </a>
