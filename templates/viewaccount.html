@@ -10,6 +10,7 @@
         </div>
         <div class="card-body">
             {% if data %}
+            {% for i in data %}
             <div class="row mb-4">
                 <table class="table">
                     <tbody>
@@ -18,7 +19,7 @@
                                 Customer ID
                             </td>
                             <td>
-                                {{ data.cust_id }}
+                                {{ i.cust_id }}
                             </td>
                         </tr>
                         <tr>
@@ -26,7 +27,7 @@
                                 Account Id
                             </td>
                             <td>
-                                {{ data.acc_id }}
+                                {{ i.acc_id }}
                             </td>
                         </tr>
                         <tr>
@@ -34,7 +35,7 @@
                                 Account Type
                             </td>
                             <td>
-                                {{ data.acc_type }}
+                                {{ i.acc_type }}
                             </td>
                         </tr>
                         <tr>
@@ -42,7 +43,7 @@
                                Balance
                             </td>
                             <td>
-                                {{ data.balance }}
+                                {{ i.balance }}
                             </td>
                         </tr>
                     </tbody>
@@ -56,6 +57,7 @@
                     </a>
                 </div>
             </div>
+            {%endfor%}
             {%else%}
             <form action="viewaccount" id="view_cust" method="POST">
                 <div class="form-group input-group mb-3">
