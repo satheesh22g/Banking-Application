@@ -87,20 +87,10 @@ def viewcustomer():
             cust_ssn_id = request.form.get("cust_ssn_id")
             cust_id = request.form.get("cust_id")
             data = db.execute("SELECT * from customers WHERE cust_id = :c or cust_ssn_id = :d", {"c": cust_id, "d": cust_ssn_id}).fetchone()
-            if data is not None and data.status != 'deactivate':
-                print(data)
-                json_data = {
-                    'cust_id': data.cust_id,
-                    'cust_ssn_id': data.cust_ssn_id,
-                    'name': data.name,
-                    'address': data.address,
-                    'age': data.age,
-                    'state': data.state,
-                    'city': data.city
-                }
-                return render_template('viewcustomer.html', viewcustomer=True, data=json_data)
+            if data is not None:
+                return render_template('viewcustomer.html', viewcustomer=True, data=data)
             
-            flash("Customer is Deactivated or not found! Please,Check you input.", 'danger')
+            flash("Customer not found! Please,Check you input.", 'danger')
 
     return render_template('viewcustomer.html', viewcustomer=True)
 
@@ -118,19 +108,9 @@ def editcustomer(cust_id=None):
                 cust_id = int(cust_id)
                 data = db.execute("SELECT * from customers WHERE cust_id = :c", {"c": cust_id}).fetchone()
                 if data is not None and data.status != 'deactivate':
-                    print(data)
-                    json_data = {
-                        'cust_id': data.cust_id,
-                        'cust_ssn_id': data.cust_ssn_id,
-                        'name': data.name,
-                        'address': data.address,
-                        'age': data.age,
-                        'state': data.state,
-                        'city': data.city
-                    }
-                    return render_template('editcustomer.html', editcustomer=True, data=json_data)
+                    return render_template('editcustomer.html', editcustomer=True, data=data)
                 else:
-                    flash('Customer is not present in database.','warning')
+                    flash('Customer is deactivated or not present in database.','warning')
             else:
                 cust_id = int(cust_id)
                 name = request.form.get("name")
@@ -165,6 +145,26 @@ def deletecustomer(cust_id=None):
                 flash(f"Customer is deactivated.","success")
                 return redirect(url_for('dashboard'))
             flash(f'Customer with id : {acc_id} is already deactivated or not present in database.','warning')
+    return redirect(url_for('viewcustomer'))
+
+@app.route('/activatecustomer')
+@app.route('/activatecustomer/<cust_id>')
+def activatecustomer(cust_id=None):
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    if session['usert'] != "executive":
+        flash("You don't have access to this page","warning")
+        return redirect(url_for('dashboard'))
+    if session['usert']=="executive":
+        if cust_id is not None:
+            cust_id = int(cust_id)
+            result = db.execute("SELECT * from customers WHERE cust_id = :a and status = 'deactivate'", {"a": cust_id}).fetchone()
+            if result is not None :
+                query = db.execute("UPDATE customers SET status='activate' WHERE cust_id = :a", {"a": cust_id})
+                db.commit()
+                flash(f"Customer is activated.","success")
+                return redirect(url_for('dashboard'))
+            flash(f'Customer with id : {acc_id} is already activated or not present in database.','warning')
     return redirect(url_for('viewcustomer'))
 
 @app.route("/addaccount" , methods=["GET", "POST"])

@@ -69,6 +69,14 @@
                                 {{ data.city }}
                             </td>
                         </tr>
+                        <tr>
+                            <td>
+                                Status
+                            </td>
+                            <td>
+                                {{ data.status }}
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -79,11 +87,19 @@
                             <button class="btn">Edit</button>
                         </a>
                     </div>
+                    {% if data.status == 'deactivate' %}
                     <div class="float-right">
-                        <a href="{{ url_for('deletecustomer',cust_id=data.cust_id ) }}">
-                            <button class="btn" onclick="alert('Are you Sure, You want to delete this customer?')">Delete</button>
+                        <a href="{{ url_for('activatecustomer',cust_id=data.cust_id ) }}">
+                            <button class="btn" onclick="alert('Are you Sure, You want to activate this customer?')">Activate</button>
                         </a>
                     </div>
+                    {% else %}
+                    <div class="float-right">
+                        <a href="{{ url_for('deletecustomer',cust_id=data.cust_id ) }}">
+                            <button class="btn" onclick="alert('Are you Sure, You want to deactivate this customer?')">Delete</button>
+                        </a>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
             {%else%}
