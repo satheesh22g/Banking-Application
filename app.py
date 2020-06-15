@@ -79,10 +79,7 @@ def addcustomer():
 def viewcustomer():
     if 'user' not in session:
         return redirect(url_for('login'))
-    if session['usert'] != "executive":
-        flash("You don't have access to this page","warning")
-        return redirect(url_for('dashboard'))
-    if session['usert']=="executive":
+    if session['usert']=="executive" or session['usert']=="teller" or session['usert']=="cashier":
         if request.method == "POST":
             cust_ssn_id = request.form.get("cust_ssn_id")
             cust_id = request.form.get("cust_id")
@@ -101,6 +98,9 @@ def viewcustomer():
                 return render_template('viewcustomer.html', viewcustomer=True, data=json_data)
             
             flash("Customer is Deactivated or not found! Please,Check you input.", 'danger')
+    else:
+        flash("You don't have access to this page","warning")
+        return redirect(url_for('dashboard'))
 
     return render_template('viewcustomer.html', viewcustomer=True)
 
@@ -227,11 +227,8 @@ def delaccount():
 @app.route("/viewaccount" , methods=["GET", "POST"])
 def viewaccount():
     if 'user' not in session:
-        return redirect(url_for('login'))
-    if session['usert'] != "executive":
-        flash("You don't have access to this page","warning")
-        return redirect(url_for('dashboard'))
-    if session['usert']=="executive":
+        return redirect(url_for('login'))        
+    if session['usert']=="executive" or session['usert']=="teller" or session['usert']=="cashier":
         if request.method == "POST":
             acc_id = request.form.get("acc_id")
             cust_id = request.form.get("cust_id")
@@ -240,6 +237,9 @@ def viewaccount():
                 return render_template('viewaccount.html', viewaccount=True, data=data)
             else:
                 flash("Account is Deactivated or not found! Please,Check you input.", 'danger')
+    else:
+        flash("You don't have access to this page","warning")
+        return redirect(url_for('dashboard'))
     return render_template('viewaccount.html', viewaccount=True)
 
 @app.route("/viewaccountstatus" , methods=["GET", "POST"])
