@@ -199,10 +199,7 @@ def customerstatus():
         flash("You don't have access to this page","warning")
         return redirect(url_for('dashboard'))
     if session['usert']=="executive":
-        # test = db.execute('select distinct cust_id,log_message,time_stamp from customerlog group by cust_id ORDER by time_stamp desc;').fetchall()
-        # print(test)
-        data = db.execute("SELECT customers.cust_id as id, customers.cust_ssn_id as ssn_id, customerlog.log_message as message, customerlog.time_stamp as date from (select distinct cust_id,log_message,time_stamp from customerlog group by cust_id ORDER by time_stamp desc) as customerlog JOIN customers ON customers.cust_id = customerlog.cust_id group by customerlog.cust_id order by customerlog.time_stamp desc").fetchall()
-        # print(data)
+        data = db.execute("SELECT customers.cust_id as id, customers.cust_ssn_id as ssn_id, customerlog.log_message as message, customerlog.time_stamp as date from (select cust_id,log_message,time_stamp from customerlog group by cust_id ORDER by time_stamp desc) as customerlog JOIN customers ON customers.cust_id = customerlog.cust_id group by customerlog.cust_id order by customerlog.time_stamp desc").fetchall()
         if data is not None:
             return render_template('customerstatus.html',customerstatus=True , data=data)
         else:
@@ -379,17 +376,9 @@ def customerlog():
         flash("You don't have access to this api","warning")
         return redirect(url_for('dashboard'))
     if session['usert']=="executive":
-        print('function called inside executive')
         if request.method == "POST":
-            print('function called inside post')
             cust_id = request.json['cust_id']
-            print('get_json function called')
-            # cust_id = json.cust_id
-            print("1",cust_id)
-            # print("2",request.form.get("cust_id"))
             data = db.execute("select log_message,time_stamp from customerlog where cust_id= :c ORDER by time_stamp desc",{'c':cust_id}).fetchone()
-            print(data)
-            # print(jsonify(data))
             t = {
                     "message" : data.log_message,
                     "date" : data.time_stamp
