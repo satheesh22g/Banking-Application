@@ -1,0 +1,66 @@
+{% extends "layout.html" %}
+
+{% block title %}Customer Status{% endblock %}
+
+{% block content %}
+<div class = "row my-5">
+    <div class="card col-md-12 mx-auto px-0">
+        <div class="card-header">
+            Customer Status
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <table id="responsive-data-table" class="col-md-12">
+                    <thead>
+                        <tr>
+                            <td>Customer ID</td>
+                            <td>Customer SSN ID</td>
+                            <td>Message</td>
+                            <td>Last update</td>
+                            <td>Operations</td>
+                            <td>View Profile</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for i in data %}
+                        <tr>
+                            <td>
+                                {{ i.id }}
+                            </td>
+                            <td>
+                                {{ i.ssn_id }}
+                            </td>
+                            <td>
+                                {{ i.message }}
+                            </td>
+                            <td>
+                                {{ i.date }}
+                            </td>
+                            <td>
+                                <a href="javaScript:void(0)" class="refresh" data-cust_id={{ i.id }}>
+                                    Refresh
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('viewcustomer',cust_id= i.id) }}">
+                                    View Details
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="row mb-4">
+                <div class="form-group col-md-12">
+                    <div class="float-right">
+                        <a href="{{ url_for('customerstatus') }}">
+                            <button class="btn">Refresh All</button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

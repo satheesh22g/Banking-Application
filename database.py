@@ -1,5 +1,5 @@
 import os
-import sys
+import sys ,datetime
 from sqlalchemy import Column, ForeignKey, Integer, String, BigInteger
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import DateTime
@@ -24,6 +24,13 @@ class Customers(Base):
     state = Column(String(250), nullable=False)
     city = Column(String(250), nullable=False)
     status = Column(String(250), nullable=False)
+
+class CustomerLog(Base):
+    __tablename__='customerlog'
+    log_id = Column(Integer, primary_key=True, autoincrement=True)
+    cust_id = Column(Integer, ForeignKey('customers.cust_id'))
+    log_message = Column(String(250), nullable=False)
+    time_stamp = Column(DateTime(timezone=False), default=datetime.datetime.utcnow)
 
 class Accounts(Base):
     __tablename__='accounts'

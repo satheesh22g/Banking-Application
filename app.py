@@ -4,7 +4,7 @@ from flask import send_file
 from flask import Flask, session, render_template, request, redirect, url_for, flash, jsonify
 from flask_bcrypt import Bcrypt
 from flask_session import Session
-from database import Base,Accounts,Customers,Users
+from database import Base,Accounts,Customers,Users,CustomerLog
 from sqlalchemy import create_engine, exc
 from sqlalchemy.orm import scoped_session, sessionmaker
 
@@ -69,14 +69,19 @@ def addcustomer():
                 if query.cust_id is None:
                     flash("Data is not inserted! Check you input.","danger")
                 else:
+                    temp = CustomerLog(cust_id=query.cust_id,log_message="Customer Created")
+                    db.add(temp)
+                    db.commit()
+                    print(temp)
                     flash(f"Customer {query.name} is created with customer ID : {query.cust_id}.","success")
                     return redirect(url_for('viewcustomer'))
             flash(f'SSN id : {cust_ssn_id} is already present in database.','warning')
         
     return render_template('addcustomer.html', addcustomer=True)
 
+@app.route("/viewcustomer/<cust_id>")
 @app.route("/viewcustomer" , methods=["GET", "POST"])
-def viewcustomer():
+def viewcustomer(cust_id=None):
     if 'user' not in session:
         return redirect(url_for('login'))
     if session['usert'] != "executive":
@@ -87,6 +92,12 @@ def viewcustomer():
             cust_ssn_id = request.form.get("cust_ssn_id")
             cust_id = request.form.get("cust_id")
             data = db.execute("SELECT * from customers WHERE cust_id = :c or cust_ssn_id = :d", {"c": cust_id, "d": cust_ssn_id}).fetchone()
+            if data is not None:
+                return render_template('viewcustomer.html', viewcustomer=True, data=data)
+            
+            flash("Customer not found! Please,Check you input.", 'danger')
+        elif cust_id is not None:
+            data = db.execute("SELECT * from customers WHERE cust_id = :c", {"c": cust_id}).fetchone()
             if data is not None:
                 return render_template('viewcustomer.html', viewcustomer=True, data=data)
             
@@ -120,6 +131,10 @@ def editcustomer(cust_id=None):
                 if result is not None :
                     result = db.execute("UPDATE customers SET name = :n , address = :add , age = :ag WHERE cust_id = :a", {"n": name,"add": address,"ag": age,"a": cust_id})
                     db.commit()
+                    temp = CustomerLog(cust_id=cust_id,log_message="Customer Data Updated")
+                    db.add(temp)
+                    db.commit()
+                    print(temp)
                     flash(f"Customer data are updated successfully.","success")
                 else:
                     flash('Invalid customer Id. Please, check customer Id.','warning')
@@ -142,9 +157,14 @@ def deletecustomer(cust_id=None):
                 # delete from accounts WHERE acc_id = :a and acc_type=:at", {"a": acc_id,"at":acc_type}
                 query = db.execute("UPDATE customers SET status='deactivate' WHERE cust_id = :a", {"a": cust_id})
                 db.commit()
+                temp = CustomerLog(cust_id=cust_id,log_message="Customer Deactivated")
+                db.add(temp)
+                db.commit()
+                print(temp)
                 flash(f"Customer is deactivated.","success")
                 return redirect(url_for('dashboard'))
-            flash(f'Customer with id : {acc_id} is already deactivated or not present in database.','warning')
+            else:
+                flash(f'Customer with id : {cust_id} is already deactivated or not present in database.','warning')
     return redirect(url_for('viewcustomer'))
 
 @app.route('/activatecustomer')
@@ -162,10 +182,32 @@ def activatecustomer(cust_id=None):
             if result is not None :
                 query = db.execute("UPDATE customers SET status='activate' WHERE cust_id = :a", {"a": cust_id})
                 db.commit()
+                temp = CustomerLog(cust_id=cust_id,log_message="Customer Activated")
+                db.add(temp)
+                db.commit()
+                print(temp)
                 flash(f"Customer is activated.","success")
                 return redirect(url_for('dashboard'))
-            flash(f'Customer with id : {acc_id} is already activated or not present in database.','warning')
+            flash(f'Customer with id : {cust_id} is already activated or not present in database.','warning')
     return redirect(url_for('viewcustomer'))
+
+@app.route('/customerstatus')
+def customerstatus():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    if session['usert'] != "executive":
+        flash("You don't have access to this page","warning")
+        return redirect(url_for('dashboard'))
+    if session['usert']=="executive":
+        # test = db.execute('select distinct cust_id,log_message,time_stamp from customerlog group by cust_id ORDER by time_stamp desc;').fetchall()
+        # print(test)
+        data = db.execute("SELECT customers.cust_id as id, customers.cust_ssn_id as ssn_id, customerlog.log_message as message, customerlog.time_stamp as date from (select distinct cust_id,log_message,time_stamp from customerlog group by cust_id ORDER by time_stamp desc) as customerlog JOIN customers ON customers.cust_id = customerlog.cust_id group by customerlog.cust_id order by customerlog.time_stamp desc").fetchall()
+        # print(data)
+        if data is not None:
+            return render_template('customerstatus.html',customerstatus=True , data=data)
+        else:
+            flash('No data found.','danger')
+    return redirect(url_for('dashboard'))
 
 @app.route("/addaccount" , methods=["GET", "POST"])
 def addaccount():
@@ -313,6 +355,59 @@ def login():
                 return redirect(url_for('dashboard'))
         flash("Sorry, Username or password not match.","danger")
     return render_template("login.html", login=True)
+
+@app.route('/api')
+@app.route('/api/v1')
+def api():
+    return """
+    <h2>List of Api</h2>
+    <ol>
+        <li>
+            <a href="/api/v1/customerlog">Customer Log</a>
+        </li>
+    </ol>
+    """
+
+@app.route('/customerlog', methods=["GET", "POST"])
+@app.route('/api/v1/customerlog', methods=["GET", "POST"])
+def customerlog():
+    print('function called')
+    if 'user' not in session:
+        flash("Please login","warning")
+        return redirect(url_for('login'))
+    if session['usert'] != "executive":
+        flash("You don't have access to this api","warning")
+        return redirect(url_for('dashboard'))
+    if session['usert']=="executive":
+        print('function called inside executive')
+        if request.method == "POST":
+            print('function called inside post')
+            cust_id = request.json['cust_id']
+            print('get_json function called')
+            # cust_id = json.cust_id
+            print("1",cust_id)
+            # print("2",request.form.get("cust_id"))
+            data = db.execute("select log_message,time_stamp from customerlog where cust_id= :c ORDER by time_stamp desc",{'c':cust_id}).fetchone()
+            print(data)
+            # print(jsonify(data))
+            t = {
+                    "message" : data.log_message,
+                    "date" : data.time_stamp
+                }
+            return jsonify(t)
+        else:
+            dict_data = []
+            data = db.execute("SELECT customers.cust_id as id, customers.cust_ssn_id as ssn_id, customerlog.log_message as message, customerlog.time_stamp as date from customerlog JOIN customers ON customers.cust_id = customerlog.cust_id order by customerlog.time_stamp desc limit 50").fetchall()
+            for row in data:
+                t = {
+                    "id" : row.id,
+                    "ssn_id" : row.ssn_id,
+                    "message" : row.message,
+                    "date" : row.date
+                }
+                dict_data.append(t)
+            return jsonify(dict_data)
+    
 # Main
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
