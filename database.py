@@ -43,6 +43,13 @@ class Accounts(Base):
     message =  Column(String(250))
     last_update = Column(DateTime)
 
+class Transactions(Base):
+    __tablename__="transactions"
+    trans_id = Column(Integer, primary_key=True, autoincrement=True)
+    acc_id = Column(Integer, ForeignKey('accounts.acc_id'))
+    trans_message = Column(String(250), nullable=False)
+    amount = Column(Integer, nullable=False)
+    time_stamp = Column(DateTime(timezone=False), default=datetime.datetime.utcnow)
     
 engine = create_engine('sqlite:///database.db')
 Base.metadata.create_all(engine)

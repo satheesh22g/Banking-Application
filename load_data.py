@@ -1,7 +1,7 @@
 import sys
 import csv
 import os
-from database import Base,Accounts,Customers,Users
+from database import Base,Accounts,Customers,Users,CustomerLog,Transactions
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from flask_bcrypt import Bcrypt
