@@ -330,9 +330,45 @@ def deposit(acc_id=None):
 
     return redirect(url_for('dashboard'))
 
-@app.route('/withdrow/<acc_id>')
-def withdrow(acc_id=None):
+    
+@app.route('/withdraw')
+@app.route('/withdraw/<acc_id>',methods=['GET','POST'])
+def withdraw(acc_id=None):
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    if session['usert'] == "executive":
+        flash("You don't have access to this page","warning")
+        return redirect(url_for('dashboard'))
+    if session['usert']=="teller" or session['usert']=="cashier":
+        if acc_id is None:
+            return redirect(url_for('viewaccount'))
+        else:
+            if request.method == "POST":
+                amount = request.form.get("amount")
+                data = db.execute("select * from accounts where acc_id = :a and status='active'",{"a":acc_id}).fetchone()
+                if data is not None:
+                    if int(data.balance)>=int(amount):
+                        balance =  int(data.balance)-int(amount)
+                        query = db.execute("UPDATE accounts SET balance= :b WHERE acc_id = :a", {"b":balance,"a": data.acc_id})
+                        db.commit()
+                        flash(f"{amount}Amount withdrawn from account: {data.acc_id} successfully.",'success')
+                        temp = Transactions(acc_id=data.acc_id,trans_message="Amount Withdrawn",amount=amount)
+                        db.add(temp)
+                        db.commit()
+                    else:
+                        flash(f"Account doesn't have sufficient Balance.",'success')
+                        return redirect(url_for('viewaccount'))
+                else:
+                    flash(f"Account not found or Deactivated.",'danger')
+            else:
+                data = db.execute("select * from accounts where acc_id = :a",{"a":acc_id}).fetchone()
+                if data is not None:
+                    return render_template('withdraw.html', deposit=True, data=data)
+                else:
+                    flash(f"Account not found or Deactivated.",'danger')
+
     return redirect(url_for('dashboard'))
+
 
 @app.route('/transfer/<acc_id>/<cust_id>')
 def transfer(acc_id=None,cust_id=None):

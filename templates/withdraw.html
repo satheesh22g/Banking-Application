@@ -1,0 +1,98 @@
+{% extends "layout.html" %}
+
+{% block title %}Add Customer{% endblock %}
+
+{% block content %}
+<div class = "row col-md-8 my-5">
+    <div class="card col-md-8 mx-auto px-0">
+        <div class="card-header">
+            Withdraw Amount
+        </div>
+        <div class="card-body">
+            {% if data.status == 'active' %}
+            <form action="{{ url_for('withdraw',acc_id=data.acc_id) }}" method="POST">
+                <table class="col-md-12">
+                    <tbody>
+                        <tr>
+                            <th>
+                                <div class="form-group input-group">
+                                    <label class="pl-3">Customer ID</label>
+                                </div>
+                            </th>
+                            <th>
+                                <div class="form-group input-group">
+                                    <label class="pl-3">{{ data.cust_id }}</label>
+                                </div>
+                                
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>
+                                <div class="form-group input-group">
+                                    <label class="pl-3">Account Id</label>
+                                </div>
+                                
+                            </th>
+                            <th>
+                                <div class="form-group input-group">
+                                    <label class="pl-3">{{ data.acc_id }}</label>
+                                </div>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>
+                                <div class="form-group input-group">
+                                    <label class="pl-3">Account Type</label>
+                                </div>
+                                
+                            </th>
+                            <th>
+                                <div class="form-group input-group">
+                                    <label class="pl-3">{{ data.acc_type }}</label>
+                                </div>
+                                
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>
+                                <div class="form-group input-group">
+                                    <label class="pl-3">Balance</label>
+                                </div>
+                                
+                            </th>
+                            <th>
+                                <div class="form-group input-group">
+                                    <label class="pl-3">{{ data.balance }}</label>
+                                </div>
+                                
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>
+                                <div class="form-group input-group">
+                                    <label class="pl-3">Withdraw Amount</label>
+                                </div>
+                                
+                            </th>
+                            <th>
+                                <div class="form-group input-group pl-3">
+                                    <input type="hidden" name="acc_id" id="acc_id" value="{{ data.acc_id }}" disabled>
+                                    <input class="form-control" name="amount" id="amount" type="textfield" placeholder="Withdraw Amount">
+                                </div>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th colspan="2">
+                                <div class="form-group input-group mt-3">
+                                    <input type="submit" value="submit" onclick="alert('Are you Sure, You want to Withdraw?')" class="btn mx-auto">
+                                </div>
+                            </th>
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
