@@ -372,8 +372,35 @@ def withdraw(acc_id=None):
 
 @app.route('/transfer/<acc_id>/<cust_id>')
 def transfer(acc_id=None,cust_id=None):
+
     return redirect(url_for('dashboard'))
 
+@app.route("/statement" , methods=["GET", "POST"])
+def statement():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    if session['usert'] == "executive":
+        flash("You don't have access to this page","warning")
+        return redirect(url_for('dashboard'))       
+    if session['usert']=="teller" or session['usert']=="cashier":
+        if request.method == "POST":
+            acc_id = request.form.get("acc_id")
+            number = request.form.get("number")
+            start_date = request.form.get("start_date")
+            end_date = request.form.get("end_date")
+            if number is not None:
+                data = db.execute("SELECT * FROM (SELECT * FROM transactions where acc_id=:d ORDER BY trans_id DESC LIMIT :l)Var1 ORDER BY trans_id ASC;", {"d": acc_id,"l":number}).fetchall()
+            else:
+                data = db.execute("SELECT * FROM transactions WHERE acc_id=:a and DATE(time_stamp) >= :s AND DATE(time_stamp) <= :e;",{"a":acc_id,"s":start_date,"e":end_date}).fetchall()
+            if data:
+                return render_template('statement.html', statement=True, data=data)
+            else:
+                flash("Account not found! Please,Check you input.", 'danger')
+                return redirect(url_for('dashboard'))
+    else:
+        flash("You don't have access to this page","warning")
+        return redirect(url_for('dashboard'))
+    return render_template('statement.html', viewaccount=True)
 # # Change Pasword
 # @app.route("/change-password", methods=["GET", "POST"])
 # def changepass():
