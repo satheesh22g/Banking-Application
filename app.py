@@ -200,7 +200,7 @@ def customerstatus():
     if session['usert']=="executive":
         # join query to get one log message per customer id
         data = db.execute("SELECT customers.cust_id as id, customers.cust_ssn_id as ssn_id, customerlog.log_message as message, customerlog.time_stamp as date from (select cust_id,log_message,time_stamp from customerlog group by cust_id ORDER by time_stamp desc) as customerlog JOIN customers ON customers.cust_id = customerlog.cust_id group by customerlog.cust_id order by customerlog.time_stamp desc").fetchall()
-        if data is not None:
+        if data:
             return render_template('customerstatus.html',customerstatus=True , data=data)
         else:
             flash('No data found.','danger')
@@ -290,7 +290,7 @@ def viewaccountstatus():
         return redirect(url_for('dashboard'))
     if session['usert']=="executive":
         data = db.execute("select * from accounts").fetchall()
-        if data is not None:
+        if data:
             return render_template('viewaccountstatus.html', viewaccount=True, data=data)
         else:
             flash("Accounts are not found!", 'danger')
