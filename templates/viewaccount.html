@@ -3,8 +3,8 @@
 {% block title %}Add Customer{% endblock %}
 
 {% block content %}
-<div class = "row mb-3">
-    <div class="card">
+<div class = "row col-md-8 my-5">
+    <div class="card col-md-8 mx-auto px-0">
         <div class="card-header">
             View Account Details
         </div>
@@ -12,7 +12,7 @@
             {% if data %}
             {% for i in data %}
             <div class="row mb-4">
-                <table class="table">
+                <table class="col-md-12">
                     <tbody>
                         <tr>
                             <td>
@@ -46,15 +46,41 @@
                                 {{ i.balance }}
                             </td>
                         </tr>
+                        <tr>
+                            <td>
+                               Status
+                            </td>
+                            <td>
+                                {{ i.status }}
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
-            <div class="row mb-4">
-                <div class="form-group">
+            <div class="row mb-4 col-md-12">
+                <div class="form-group d-flex col-md-12">
                     {% if session['usert']=="executive" %}
                     <a href="{{ url_for('delaccount') }}">
                         <button class="btn float-right">Delete</button>
                     </a>
+                    {% elif session['usert']=="teller" or session['usert']=="cashier" %}
+                        {% if i.status == 'active' %}
+                        <div class="col-md-4">
+                            <a href="{{ url_for('deposit',acc_id=i.acc_id ) }}">
+                                <button class="btn">Deposit</button>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{{ url_for('transfer',cust_id=i.cust_id,acc_id = i.acc_id) }}">
+                                <button class="btn">Transfer</button>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{{ url_for('withdrow',acc_id=i.acc_id ) }}">
+                                <button class="btn">Withdrow</button>
+                            </a>
+                        </div>
+                        {% endif %}
                     {%endif%}
                 </div>
             </div>
