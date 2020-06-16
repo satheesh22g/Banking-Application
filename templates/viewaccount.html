@@ -65,21 +65,23 @@
                     </a>
                     {% elif session['usert']=="teller" or session['usert']=="cashier" %}
                         {% if i.status == 'active' %}
-                        <div class="col-md-4">
-                            <a href="{{ url_for('deposit',acc_id=i.acc_id ) }}">
-                                <button class="btn">Deposit</button>
-                            </a>
-                        </div>
-                        <div class="col-md-4">
-                            <a href="{{ url_for('transfer',cust_id=i.cust_id,acc_id = i.acc_id) }}">
-                                <button class="btn">Transfer</button>
-                            </a>
-                        </div>
-                        <div class="col-md-4">
-                            <a href="{{ url_for('withdraw',acc_id=i.acc_id ) }}">
-                                <button class="btn">Withdraw</button>
-                            </a>
-                        </div>
+                            <div class="col-md-4">
+                                <a href="{{ url_for('deposit',acc_id=i.acc_id ) }}">
+                                    <button class="btn">Deposit</button>
+                                </a>
+                            </div>
+                            {% if data|length > 1 %}
+                                <div class="col-md-4">
+                                    <a href="{{ url_for('transfer',cust_id=i.cust_id) }}">
+                                        <button class="btn">Transfer</button>
+                                    </a>
+                                </div>
+                            {% endif %}
+                            <div class="col-md-4">
+                                <a href="{{ url_for('withdraw',acc_id=i.acc_id ) }}">
+                                    <button class="btn">Withdraw</button>
+                                </a>
+                            </div>
                         {% endif %}
                     {%endif%}
                 </div>

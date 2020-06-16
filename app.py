@@ -233,7 +233,7 @@ def addaccount():
                     if query.acc_id is None:
                         flash("Data is not inserted! Check you input.","danger")
                     else:
-                        flash(f"Customer {query.acc_id} is created with customer ID : {query.cust_id}.","success")
+                        flash(f"{query.acc_type} account is created with customer ID : {query.acc_id}.","success")
                         return redirect(url_for('dashboard'))
                 else:
                     flash(f'Customer with id : {cust_id} has already {acc_type} account.','warning')
@@ -296,7 +296,7 @@ def viewaccountstatus():
             flash("Accounts are not found!", 'danger')
     return render_template('viewaccountstatus.html', viewaccount=True)
 
-@app.route('/deposit')
+@app.route('/deposit',methods=['GET','POST'])
 @app.route('/deposit/<acc_id>',methods=['GET','POST'])
 def deposit(acc_id=None):
     if 'user' not in session:
@@ -315,7 +315,7 @@ def deposit(acc_id=None):
                     balance = int(amount) + int(data.balance)
                     query = db.execute("UPDATE accounts SET balance= :b WHERE acc_id = :a", {"b":balance,"a": data.acc_id})
                     db.commit()
-                    flash(f"{amount}Amount deposited into account: {data.acc_id} successfully.",'success')
+                    flash(f"{amount} Amount deposited into account: {data.acc_id} successfully.",'success')
                     temp = Transactions(acc_id=data.acc_id,trans_message="Amount Deposited",amount=amount)
                     db.add(temp)
                     db.commit()
@@ -331,7 +331,7 @@ def deposit(acc_id=None):
     return redirect(url_for('dashboard'))
 
     
-@app.route('/withdraw')
+@app.route('/withdraw',methods=['GET','POST'])
 @app.route('/withdraw/<acc_id>',methods=['GET','POST'])
 def withdraw(acc_id=None):
     if 'user' not in session:
@@ -351,7 +351,7 @@ def withdraw(acc_id=None):
                         balance =  int(data.balance)-int(amount)
                         query = db.execute("UPDATE accounts SET balance= :b WHERE acc_id = :a", {"b":balance,"a": data.acc_id})
                         db.commit()
-                        flash(f"{amount}Amount withdrawn from account: {data.acc_id} successfully.",'success')
+                        flash(f"{amount} Amount withdrawn from account: {data.acc_id} successfully.",'success')
                         temp = Transactions(acc_id=data.acc_id,trans_message="Amount Withdrawn",amount=amount)
                         db.add(temp)
                         db.commit()
@@ -369,9 +369,60 @@ def withdraw(acc_id=None):
 
     return redirect(url_for('dashboard'))
 
+@app.route('/transfer',methods=['GET','POST'])
+@app.route('/transfer/<cust_id>',methods=['GET','POST'])
+def transfer(cust_id=None):
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    if session['usert'] == "executive":
+        flash("You don't have access to this page","warning")
+        return redirect(url_for('dashboard'))
+    if session['usert']=="teller" or session['usert']=="cashier":
+        if cust_id is None:
+            return redirect(url_for('viewaccount'))
+        else:
+            if request.method == 'POST':
+                src_type = request.form.get("src_type")
+                trg_type = request.form.get("trg_type")
+                amount = int(request.form.get("amount"))
+                if src_type != trg_type:
+                    src_data  = db.execute("select * from accounts where cust_id = :a and acc_type = :t and status='active'",{"a":cust_id,"t":src_type}).fetchone()
+                    trg_data  = db.execute("select * from accounts where cust_id = :a and acc_type = :t and status='active'",{"a":cust_id,"t":trg_type}).fetchone()
+                    if src_data is not None and trg_data is not None:
+                        if src_data.balance > amount:
+                            src_balance = src_data.balance - amount
+                            trg_balance = trg_data.balance + amount
+                            
+                            test = db.execute("update accounts set balance = :b where cust_id = :a and acc_type = :t",{"b":src_balance,"a":cust_id,"t":src_type})
+                            db.commit()
+                            temp = Transactions(acc_id=src_data.acc_id,trans_message="Amount Transfered to "+str(trg_data.acc_id),amount=amount)
+                            db.add(temp)
+                            db.commit()
 
-@app.route('/transfer/<acc_id>/<cust_id>')
-def transfer(acc_id=None,cust_id=None):
+                            db.execute("update accounts set balance = :b where cust_id = :a and acc_type = :t",{"b":trg_balance,"a":cust_id,"t":trg_type})
+                            db.commit()
+                            temp = Transactions(acc_id=trg_data.acc_id,trans_message="Amount received from "+str(src_data.acc_id),amount=amount)
+                            db.add(temp)
+                            db.commit()
+
+                            flash(f"Amount transfered to {trg_data.acc_id} from {src_data.acc_id} successfully",'success')
+                        else:
+                            flash("Insufficient amount to transfer.","danger")
+                            
+                    else:
+                        flash("Accounts not found","danger")
+
+                else:
+                    flash("Can't Transfer amount to same account.",'warning')
+
+            else:
+                data = db.execute("select * from accounts where cust_id = :a",{"a":cust_id}).fetchall()
+                if data and len(data) == 2:
+                    return render_template('transfer.html', deposit=True, cust_id=cust_id)
+                else:
+                    flash("Data Not found or Invalid Customer ID",'danger')
+                    return redirect(url_for('viewaccount'))
+
     return redirect(url_for('dashboard'))
 
 # # Change Pasword
