@@ -46,6 +46,17 @@ $(document).ready(function() {
           }
     })
 
+    $('#view_acc').validate({
+        rules: {
+            cust_id: {
+                required: '#acc_id:blank'
+            },
+            acc_id: {
+                required: '#cust_id:blank'
+            }
+          }
+    })
+
     $('.refresh').click(function(event){
         event.preventDefault()
         target = event.target

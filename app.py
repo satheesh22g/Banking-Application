@@ -272,7 +272,7 @@ def viewaccount():
             acc_id = request.form.get("acc_id")
             cust_id = request.form.get("cust_id")
             data = db.execute("SELECT * from accounts WHERE cust_id = :c or acc_id = :d", {"c": cust_id, "d": acc_id}).fetchall()
-            if data is not None:
+            if data:
                 return render_template('viewaccount.html', viewaccount=True, data=data)
             
             flash("Account not found! Please,Check you input.", 'danger')
