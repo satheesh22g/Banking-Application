@@ -5,7 +5,7 @@
 <body background="{{ url_for('static', filename='images/bimage7.jpg') }}">
 <div class="flip-box" style="width: 95%; Height: 700px ">
   <div class="flip-box-inner" style="width: 100%; Height: 700px" >
-    <div class="flip-box-front" style="width: 100%; Height: 700px; background-image="{{ url_for('static', filename='images/bimage6.jpg') }}" >
+    <div class="flip-box-front" style="width: 100%; Height: 700px; background-image:url('{{ url_for('static', filename='images/bimage6.jpg') }}')" >
       <img src="{{ url_for('static', filename='images/bimage2.jpg') }}">
     </div>
     <div class="flip-box-back" style="width: 95%; Height: 700px; background-color: #FCFCBB">
