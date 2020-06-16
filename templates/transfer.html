@@ -1,0 +1,91 @@
+{% extends "layout.html" %}
+
+{% block title %}Transfer Amount{% endblock %}
+
+{% block content %}
+<div class = "row col-md-8 my-5">
+    <div class="card col-md-8 mx-auto px-0">
+        <div class="card-header">
+            Transfer Amount
+        </div>
+        <div class="card-body">
+            {% if cust_id %}
+            <form action="{{ url_for('transfer',cust_id=cust_id) }}" method="POST">
+                <table class="col-md-12">
+                    <tbody>
+                        <tr>
+                            <th>
+                                <div class="form-group input-group">
+                                    <label class="pl-3">Customer ID</label>
+                                </div>
+                            </th>
+                            <th>
+                                <div class="form-group input-group">
+                                    <label class="pl-3">{{ cust_id }}</label>
+                                </div>
+                                
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>
+                                <div class="form-group input-group">
+                                    <label class="pl-3">Source Account Type</label>
+                                </div>
+                                
+                            </th>
+                            <th>
+                                <div class="form-group input-group pl-3">
+                                    <select class="form-control sel_type" id="src_type" name="src_type">
+                                        <option value="" disabled>--Select Type--</option>
+                                        <option value="current">Current</option>
+                                        <option value="savings">Savings</option>
+                                    </select>
+                                </div>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>
+                                <div class="form-group input-group">
+                                    <label class="pl-3">Target Account Type</label>
+                                </div>
+                                
+                            </th>
+                            <th>
+                                <div class="form-group input-group pl-3">
+                                    <select class="form-control sel_type" id="trg_type" name="trg_type">
+                                        <option value="" disabled>--Select Type--</option>
+                                        <option value="savings">Savings</option>
+                                        <option value="current">Current</option>
+                                    </select>
+                                </div>
+                                
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>
+                                <div class="form-group input-group">
+                                    <label class="pl-3">Transfer Amount</label>
+                                </div>
+                            </th>
+                            <th>
+                                <div class="form-group input-group pl-3">
+                                    <input class="form-control" name="cust_id" id="cust_id" value="{{ cust_id }}" type="hidden" disabled>
+                                    <input class="form-control" name="amount" id="amount" type="textfield" placeholder="Transfer Amount">
+                                </div>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th colspan="2">
+                                <div class="form-group input-group mt-3">
+                                    <input type="submit" value="submit" onclick="alert('Are you Sure, You want to Transfer?')" class="btn mx-auto">
+                                </div>
+                            </th>
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

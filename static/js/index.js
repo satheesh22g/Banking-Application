@@ -57,6 +57,13 @@ $(document).ready(function() {
           }
     })
 
+    $('select.sel_type').change(function () {
+        if (this.value == 'current')
+            $('select.sel_type').not(this).val('savings');
+        if (this.value == 'savings')
+            $('select.sel_type').not(this).val('current');
+    });
+
     $('.refresh').click(function(event){
         event.preventDefault()
         target = event.target
