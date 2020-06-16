@@ -6,7 +6,7 @@ __pycache__/*.*.pyc
 /*_session/
 database.db
 *.db
-
+.idea
 # C extensions
 *.so
 
