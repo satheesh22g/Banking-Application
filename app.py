@@ -4,7 +4,7 @@ from flask import send_file
 from flask import Flask, session, render_template, request, redirect, url_for, flash, jsonify
 from flask_bcrypt import Bcrypt
 from flask_session import Session
-from database import Base,Accounts,Customers,Users,CustomerLog
+from database import Base,Accounts,Customers,Users,CustomerLog,Transactions
 from sqlalchemy import create_engine, exc
 from sqlalchemy.orm import scoped_session, sessionmaker
 import datetime
@@ -274,8 +274,8 @@ def viewaccount():
             data = db.execute("SELECT * from accounts WHERE cust_id = :c or acc_id = :d", {"c": cust_id, "d": acc_id}).fetchall()
             if data is not None:
                 return render_template('viewaccount.html', viewaccount=True, data=data)
-            else:
-                flash("Account not found! Please,Check you input.", 'danger')
+            
+            flash("Account not found! Please,Check you input.", 'danger')
     else:
         flash("You don't have access to this page","warning")
         return redirect(url_for('dashboard'))
@@ -297,6 +297,47 @@ def viewaccountstatus():
             flash("Accounts are not found!", 'danger')
     return render_template('viewaccountstatus.html', viewaccount=True)
 
+@app.route('/deposit')
+@app.route('/deposit/<acc_id>',methods=['GET','POST'])
+def deposit(acc_id=None):
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    if session['usert'] == "executive":
+        flash("You don't have access to this page","warning")
+        return redirect(url_for('dashboard'))
+    if session['usert']=="teller" or session['usert']=="cashier":
+        if acc_id is None:
+            return redirect(url_for('viewaccount'))
+        else:
+            if request.method == "POST":
+                amount = request.form.get("amount")
+                data = db.execute("select * from accounts where acc_id = :a and status='active'",{"a":acc_id}).fetchone()
+                if data is not None:
+                    balance = int(amount) + int(data.balance)
+                    query = db.execute("UPDATE accounts SET balance= :b WHERE acc_id = :a", {"b":balance,"a": data.acc_id})
+                    db.commit()
+                    flash(f"{amount}Amount deposited into account: {data.acc_id} successfully.",'success')
+                    temp = Transactions(acc_id=data.acc_id,trans_message="Amount Deposited",amount=amount)
+                    db.add(temp)
+                    db.commit()
+                else:
+                    flash(f"Account not found or Deactivated.",'danger')
+            else:
+                data = db.execute("select * from accounts where acc_id = :a",{"a":acc_id}).fetchone()
+                if data is not None:
+                    return render_template('deposit.html', deposit=True, data=data)
+                else:
+                    flash(f"Account not found or Deactivated.",'danger')
+
+    return redirect(url_for('dashboard'))
+
+@app.route('/withdrow/<acc_id>')
+def withdrow(acc_id=None):
+    return redirect(url_for('dashboard'))
+
+@app.route('/transfer/<acc_id>/<cust_id>')
+def transfer(acc_id=None,cust_id=None):
+    return redirect(url_for('dashboard'))
 
 # # Change Pasword
 # @app.route("/change-password", methods=["GET", "POST"])
