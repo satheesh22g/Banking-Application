@@ -290,7 +290,6 @@ def viewaccountstatus():
         return redirect(url_for('dashboard'))
     if session['usert']=="executive":
         data = db.execute("select * from accounts").fetchall()
-
         if data is not None:
             return render_template('viewaccountstatus.html', viewaccount=True, data=data)
         else:

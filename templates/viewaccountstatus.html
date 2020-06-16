@@ -46,11 +46,15 @@
                       </table>
                    
                     </div>
-                    <div class="row mb-4">
-                        <div class="form-group">
-                           
-                        </div>
-                    </div>
+                    <div class="row">
+                      <div class="form-group col-md-12 text-center">
+                          <div class="float-right">
+                              <a href="{{ url_for('viewaccountstatus') }}">
+                                  <button class="btn">Refresh the List</button>
+                              </a>
+                          </div>
+                      </div>
+                  </div>
                     {% endif %}
                 </div>
             </div>
