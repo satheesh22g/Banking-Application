@@ -1,17 +1,22 @@
 {% extends "layout.html" %}
 
 {% block title %}Home page{% endblock %}
-
 {% block content %}
-<main role="main">
-    <div class="jumbotron">
-        <div class="col-sm-8 mx-auto">
-            <h1>Welcome</h1>
-            <p style="color: black;"><b> Welcome to The Retail Bank! Retail bank serves individual customers, to manage their savings and current accounts. It has the ability to create customer, open customer account, update and delete customer, manage cashier transactions such as deposit, withdraw and transfer functionalities.</b></p>
-            <!-- <p>
-                <a class="btn btn-primary" href="/login" role="button"> Login &raquo;</a>
-            </p> -->
-        </div>
+<body background="{{ url_for('static', filename='images/bimage7.jpg') }}">
+<div class="flip-box" style="width: 95%; Height: 700px ">
+  <div class="flip-box-inner" style="width: 100%; Height: 700px" >
+    <div class="flip-box-front" style="width: 100%; Height: 700px; background-image="{{ url_for('static', filename='images/bimage6.jpg') }}" >
+      <img src="{{ url_for('static', filename='images/bimage2.jpg') }}">
     </div>
-</main>
+    <div class="flip-box-back" style="width: 95%; Height: 700px; background-color: #FCFCBB">
+      <br>
+      <br>
+      <h2 style="color:Red !important; text-align: center;" >Welcome to The Retail Bank! </h2><br>
+      <h4><p style="color: black;"><b> Retail bank serves individual customers, to manage their savings and current accounts. It has the ability to create customer, open customer account, update and delete customer, manage cashier transactions such as deposit, withdraw and transfer functionalities.</b></p>
+      <br></h4>
+      <h2 style="color:Red !important; text-align: center;" >Quick Links</h2>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
