@@ -1,15 +1,10 @@
-<head>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/login.css') }}">
-    <script type = "text/javascript" src = "{{ url_for('static', filename = 'js/index.js') }}" ></script>
 
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-</head>
-<body>
+{% extends "layout.html" %}
 
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/login1.css') }}">
 <div class="container">
     {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -23,7 +18,7 @@
 <div class="d-flex justify-content-center h-100">
    
  <div class="card">
-    <h1 style="color: aliceblue;text-align: center;padding-bottom:50px;padding-top: 25px;">RETAIL BANKING</h1>
+    <!-- <h1 style="color: aliceblue;text-align: center;padding-bottom:50px;padding-top: 25px;">RETAIL BANKING</h1> -->
      <div class="card-header">
          <h3>Sign In</h3>
         
@@ -34,25 +29,25 @@
                  <div class="input-group-prepend">
                      <span class="input-group-text"><i class="fas fa-user"></i></span>
                  </div>
-                <input class="form-control" name="username" type="text" placeholder="UserName" required maxlength="30">
+                <input class="form-control" name="username" type="text" placeholder="UserName" required maxlength="30" style="height: 37px;">
                  
              </div>
              <div class="input-group form-group">
                  <div class="input-group-prepend">
                      <span class="input-group-text"><i class="fas fa-key"></i></span>
                  </div>
-                  <input class="form-control" name="password" type="password" pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{10,}$" placeholder="Password" required maxlength="30" id="passwordInput">
+                  <input class="form-control" name="password" type="password" pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{10,}$" placeholder="Password" required maxlength="30" id="passwordInput" style="height: 37px;">
 
              </div>
              <div style="padding-left: 15px;color: white;">
-               <input type="checkbox" id="showPass">Show Password
+               <input type="checkbox" id="showPass">&nbsp;Show Password
              </div>
             
              <div class="form-group">
                  <input type="submit" value="Login" class="btn float-right login_btn">
              </div>
              <br>
-             <a class="btn btn-warning" href='/'>&#10094;Back to Home</a> 
+
          </form>
     
      {% with messages = get_flashed_messages(category_filter=["greet"]) %}
@@ -72,6 +67,7 @@
  </div>
 </div>
 </div>
+{% endblock %}
 <!-- <script>
 function myFunction() {
 var x = document.getElementById("myInput");
@@ -82,4 +78,3 @@ x.type = "password";
 }
 }
 </script> -->
-</body>
