@@ -14,7 +14,6 @@ lml==0.0.9
 MarkupSafe==1.1.1
 numpy==1.18.1
 pdfkit==0.6.1
-pkg-resources==0.0.0
 pycparser==2.19
 pyecharts-jupyter-installer==0.0.3
 pyparsing==2.4.6

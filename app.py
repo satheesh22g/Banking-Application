@@ -500,7 +500,7 @@ def pdf_xl_statement(acc_id=None,ftype=None):
                     workbook.save(output)
                     output.seek(0)
 
-                    response = Response(output, mimetype="application/ms-excel", headers={"Content-Disposition":"attachment;filename=statment.xlsx"})
+                    response = Response(output, mimetype="application/ms-excel", headers={"Content-Disposition":"attachment;filename=statment-"+str(acc_id)+".xls"})
                     return response
             else:
                 flash("Invalid account Id",'danger')
