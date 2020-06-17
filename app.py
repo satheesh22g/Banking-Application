@@ -2,15 +2,15 @@ import os
 import io
 import sys
 from flask import send_file
-from flask import Flask, session, render_template, request, redirect, url_for, flash, jsonify, Response, make_response
+from flask import Flask, session, render_template, request, redirect, url_for, flash, jsonify, Response
 from flask_bcrypt import Bcrypt
 from flask_session import Session
 from database import Base,Accounts,Customers,Users,CustomerLog,Transactions
 from sqlalchemy import create_engine, exc
 from sqlalchemy.orm import scoped_session, sessionmaker
 import datetime
-import pdfkit
 import xlwt
+from fpdf import FPDF
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
@@ -469,13 +469,57 @@ def pdf_xl_statement(acc_id=None,ftype=None):
             column_names = ['TransactionId', 'Description', 'Date', 'Amount']
             if data:
                 if ftype is None:
-                    rendered = render_template('pdf_xl_statement.html',data=data ,acc_id=acc_id)
-                    pdf = pdfkit.from_string(rendered,False)
-                    response = make_response(pdf)
-                    response.headers['Content-Type'] = 'application/pdf'
-                    response.headers['Content-Dispostion'] = 'inline; filename=statment'+str(acc_id)+'.pdf'
+                    pdf = FPDF()
+                    pdf.add_page()
+                    
+                    page_width = pdf.w - 2 * pdf.l_margin
+                    
+                    # code for setting header
+                    pdf.set_font('Times','B',16.0) 
+                    pdf.cell(page_width, 0.0, "Retail Banking", align='C')
+                    pdf.ln(10)
 
-                    return response
+                    # code for Showing account id
+                    msg='Account Statment : '+str(acc_id)
+                    pdf.set_font('Times','',12.0) 
+                    pdf.cell(page_width, 0.0, msg, align='C')
+                    pdf.ln(10)
+
+                    # code for Showing account id
+                    pdf.set_font('Times', 'B', 11)
+                    pdf.ln(1)
+                    
+                    th = pdf.font_size
+                    
+                    # code for table header
+                    pdf.cell(page_width/5, th, 'Transaction Id')
+                    pdf.cell(page_width/3, th, 'Description')
+                    pdf.cell(page_width/3, th, 'Date')
+                    pdf.cell(page_width/7, th, 'Amont')
+                    pdf.ln(th)
+
+                    pdf.set_font('Times', '', 11)
+
+                    # code for table row data
+                    for row in data:
+                        pdf.cell(page_width/5, th, str(row.trans_id))
+                        pdf.cell(page_width/3, th, row.trans_message)
+                        pdf.cell(page_width/3, th, str(row.time_stamp))
+                        pdf.cell(page_width/7, th, str(row.amount))
+                        pdf.ln(th)
+                    
+                    pdf.ln(10)
+
+                    bal = db.execute("SELECT balance FROM accounts WHERE acc_id=:a;",{"a":acc_id}).fetchone()
+                    
+                    pdf.set_font('Times','',10.0) 
+                    msg='Current Balance : '+str(bal.balance)
+                    pdf.cell(page_width, 0.0, msg, align='C')
+                    pdf.ln(5)
+
+                    pdf.cell(page_width, 0.0, '-- End of statement --', align='C')
+                    
+                    return Response(pdf.output(dest='S').encode('latin-1'), mimetype='application/pdf', headers={'Content-Disposition':'inline;filename=statement.pdf'})
                 elif ftype == 'xl':
                     output = io.BytesIO()
                     #create WorkBook object
@@ -500,7 +544,7 @@ def pdf_xl_statement(acc_id=None,ftype=None):
                     workbook.save(output)
                     output.seek(0)
 
-                    response = Response(output, mimetype="application/ms-excel", headers={"Content-Disposition":"attachment;filename=statment-"+str(acc_id)+".xls"})
+                    response = Response(output, mimetype="application/ms-excel", headers={"Content-Disposition":"attachment;filename=statment.xls"})
                     return response
             else:
                 flash("Invalid account Id",'danger')
