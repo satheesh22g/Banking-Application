@@ -1,13 +1,16 @@
 import os
+import io
 import sys
 from flask import send_file
-from flask import Flask, session, render_template, request, redirect, url_for, flash, jsonify
+from flask import Flask, session, render_template, request, redirect, url_for, flash, jsonify, Response, make_response
 from flask_bcrypt import Bcrypt
 from flask_session import Session
 from database import Base,Accounts,Customers,Users,CustomerLog,Transactions
 from sqlalchemy import create_engine, exc
 from sqlalchemy.orm import scoped_session, sessionmaker
 import datetime
+import pdfkit
+import xlwt
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
@@ -443,7 +446,7 @@ def statement():
             else:
                 data = db.execute("SELECT * FROM transactions WHERE acc_id=:a and DATE(time_stamp) >= :s AND DATE(time_stamp) <= :e;",{"a":acc_id,"s":start_date,"e":end_date}).fetchall()
             if data:
-                return render_template('statement.html', statement=True, data=data)
+                return render_template('statement.html', statement=True, data=data, acc_id=acc_id)
             else:
                 flash("Account not found! Please,Check you input.", 'danger')
                 return redirect(url_for('dashboard'))
@@ -451,6 +454,60 @@ def statement():
         flash("You don't have access to this page","warning")
         return redirect(url_for('dashboard'))
     return render_template('statement.html', viewaccount=True)
+
+@app.route('/pdf_xl_statement/<acc_id>')
+@app.route('/pdf_xl_statement/<acc_id>/<ftype>')
+def pdf_xl_statement(acc_id=None,ftype=None):
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    if session['usert'] == "executive":
+        flash("You don't have access to this page","warning")
+        return redirect(url_for('dashboard'))       
+    if session['usert']=="teller" or session['usert']=="cashier":
+        if acc_id is not None:
+            data = db.execute("SELECT * FROM transactions WHERE acc_id=:a order by time_stamp limit 20;",{"a":acc_id}).fetchall()
+            column_names = ['TransactionId', 'Description', 'Date', 'Amount']
+            if data:
+                if ftype is None:
+                    rendered = render_template('pdf_xl_statement.html',data=data ,acc_id=acc_id)
+                    pdf = pdfkit.from_string(rendered,False)
+                    response = make_response(pdf)
+                    response.headers['Content-Type'] = 'application/pdf'
+                    response.headers['Content-Dispostion'] = 'inline; filename=statment'+str(acc_id)+'.pdf'
+
+                    return response
+                elif ftype == 'xl':
+                    output = io.BytesIO()
+                    #create WorkBook object
+                    workbook = xlwt.Workbook()
+                    #add a sheet
+                    sh = workbook.add_sheet('Account statment')
+
+                    #add headers
+                    sh.write(0, 0, 'Transaction ID')
+                    sh.write(0, 1, 'Description')
+                    sh.write(0, 2, 'Date')
+                    sh.write(0, 3, 'Amount')
+
+                    idx = 0
+                    for row in data:
+                        sh.write(idx+1, 0, str(row.trans_id))
+                        sh.write(idx+1, 1, row.trans_message)
+                        sh.write(idx+1, 2, str(row.time_stamp))
+                        sh.write(idx+1, 3, str(row.amount))
+                        idx += 1
+
+                    workbook.save(output)
+                    output.seek(0)
+
+                    response = Response(output, mimetype="application/ms-excel", headers={"Content-Disposition":"attachment;filename=statment.xlsx"})
+                    return response
+            else:
+                flash("Invalid account Id",'danger')
+        else:
+            flash("Please, provide account Id",'warning')
+    return redirect(url_for('dashboard'))
+
 # # Change Pasword
 # @app.route("/change-password", methods=["GET", "POST"])
 # def changepass():

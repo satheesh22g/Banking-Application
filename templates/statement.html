@@ -59,10 +59,10 @@
                 </nav>
             </div>
           <div class="center">
-            <a href="{{ url_for('withdraw',acc_id=i.acc_id ) }}">
+            <a href="{{ url_for('pdf_xl_statement',acc_id=acc_id ) }}">
               <button class="btn">Download as PDF</button>
             </a>
-            <a href="{{ url_for('withdraw',acc_id=i.acc_id ) }}">
+            <a href="{{ url_for('pdf_xl_statement',acc_id=acc_id, ftype='xl' ) }}">
               <button class="btn">Download as XL</button>
             </a>
           </div>

@@ -14,7 +14,7 @@
             <li class="nav-item"><a href="{{ url_for('viewaccountstatus') }}" class="nav-link {% if viewaccountstatus %}active{% endif %}">View Account Status</a></li>
             {% elif session['usert']=="teller" or session['usert']=="cashier" %}
             <li class="nav-item"><a href="{{ url_for('viewaccount') }}" class="nav-link {% if viewaccount %}active{% endif %}">View Account</a></li>
-
+            <li class="nav-item"><a href="{{ url_for('statement') }}" class="nav-link {% if statement %}active{% endif %}">Account Statement</a></li>
             {% endif %}
         <li class="nav-item"><a href="{{ url_for('logout') }}" class="nav-link">Logout</a></li>
         {% endif %}
