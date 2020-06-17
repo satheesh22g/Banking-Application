@@ -59,8 +59,12 @@
                 </nav>
             </div>
           <div class="center">
-            <button>Download as PDF</button>
-            <button>Download as XL</button>
+            <a href="{{ url_for('withdraw',acc_id=i.acc_id ) }}">
+              <button class="btn">Download as PDF</button>
+            </a>
+            <a href="{{ url_for('withdraw',acc_id=i.acc_id ) }}">
+              <button class="btn">Download as XL</button>
+            </a>
           </div>
         </div>
     </div>
