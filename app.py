@@ -441,7 +441,7 @@ def statement():
             number = request.form.get("number")
             start_date = request.form.get("start_date")
             end_date = request.form.get("end_date")
-            if number is not None:
+            if number.strip():
                 data = db.execute("SELECT * FROM (SELECT * FROM transactions where acc_id=:d ORDER BY trans_id DESC LIMIT :l)Var1 ORDER BY trans_id ASC;", {"d": acc_id,"l":number}).fetchall()
             else:
                 data = db.execute("SELECT * FROM transactions WHERE acc_id=:a and DATE(time_stamp) >= :s AND DATE(time_stamp) <= :e;",{"a":acc_id,"s":start_date,"e":end_date}).fetchall()
@@ -552,6 +552,9 @@ def pdf_xl_statement(acc_id=None,ftype=None):
             flash("Please, provide account Id",'warning')
     return redirect(url_for('dashboard'))
 
+@app.errorhandler(404)
+def not_found(e):
+  return render_template("404.html") 
 # # Change Pasword
 # @app.route("/change-password", methods=["GET", "POST"])
 # def changepass():
