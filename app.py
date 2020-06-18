@@ -16,33 +16,16 @@ app = Flask(__name__)
 bcrypt = Bcrypt(app)
 app.secret_key = os.urandom(24)
 
-# Configure session to use filesystem
-# app.config["SESSION_PERMANENT"] = False
-# app.config["SESSION_TYPE"] = "filesystem"
-# Session(app)
-
 # Set up database
 engine = create_engine('sqlite:///database.db',connect_args={'check_same_thread': False},echo=True)
 Base.metadata.bind = engine
 db = scoped_session(sessionmaker(bind=engine))
-# @app.route("/")
-# def welcomepage():
-#     return render_template("welcomepage.html")
-# def index():
-#     if 'user' in session:
-#         return redirect(url_for('dashboard'))
-    
-#     return render_template("login.html" , login=True)
     
 # MAIN
 @app.route('/')
 @app.route("/dashboard")
 def dashboard():
     return render_template("home.html", home=True)
-    # if 'user' not in session:
-    #     return redirect(url_for('index'))
-    # else:
-    #     return render_template("home.html" , home=True)
 
 @app.route("/addcustomer" , methods=["GET", "POST"])
 def addcustomer():
@@ -284,6 +267,7 @@ def viewaccount():
         return redirect(url_for('dashboard'))
     return render_template('viewaccount.html', viewaccount=True)
 
+
 @app.route("/viewaccountstatus" , methods=["GET", "POST"])
 def viewaccountstatus():
     if 'user' not in session:
@@ -299,6 +283,7 @@ def viewaccountstatus():
             flash("Accounts are not found!", 'danger')
     return render_template('viewaccountstatus.html', viewaccount=True)
 
+# Code for deposit amount 
 @app.route('/deposit',methods=['GET','POST'])
 @app.route('/deposit/<acc_id>',methods=['GET','POST'])
 def deposit(acc_id=None):
@@ -333,7 +318,7 @@ def deposit(acc_id=None):
 
     return redirect(url_for('dashboard'))
 
-    
+# Code for withdraw amount 
 @app.route('/withdraw',methods=['GET','POST'])
 @app.route('/withdraw/<acc_id>',methods=['GET','POST'])
 def withdraw(acc_id=None):
@@ -372,6 +357,7 @@ def withdraw(acc_id=None):
 
     return redirect(url_for('dashboard'))
 
+# Code for transfer amount 
 @app.route('/transfer',methods=['GET','POST'])
 @app.route('/transfer/<cust_id>',methods=['GET','POST'])
 def transfer(cust_id=None):
@@ -428,6 +414,10 @@ def transfer(cust_id=None):
 
     return redirect(url_for('dashboard'))
 
+# code for view account statment based on the account id
+# Using number of last transaction
+# or 
+# Using Specified date duration
 @app.route("/statement" , methods=["GET", "POST"])
 def statement():
     if 'user' not in session:
@@ -455,6 +445,7 @@ def statement():
         return redirect(url_for('dashboard'))
     return render_template('statement.html', statement=True)
 
+# code for generate Statement PDF or Excel file
 @app.route('/pdf_xl_statement/<acc_id>')
 @app.route('/pdf_xl_statement/<acc_id>/<ftype>')
 def pdf_xl_statement(acc_id=None,ftype=None):
@@ -468,7 +459,7 @@ def pdf_xl_statement(acc_id=None,ftype=None):
             data = db.execute("SELECT * FROM transactions WHERE acc_id=:a order by time_stamp limit 20;",{"a":acc_id}).fetchall()
             column_names = ['TransactionId', 'Description', 'Date', 'Amount']
             if data:
-                if ftype is None:
+                if ftype is None: # Check for provide pdf file as default
                     pdf = FPDF()
                     pdf.add_page()
                     
@@ -520,7 +511,9 @@ def pdf_xl_statement(acc_id=None,ftype=None):
                     pdf.cell(page_width, 0.0, '-- End of statement --', align='C')
                     
                     return Response(pdf.output(dest='S').encode('latin-1'), mimetype='application/pdf', headers={'Content-Disposition':'inline;filename=statement.pdf'})
-                elif ftype == 'xl':
+                
+                elif ftype == 'xl': # Check for bulid and send Excel file for download
+
                     output = io.BytesIO()
                     #create WorkBook object
                     workbook = xlwt.Workbook()
@@ -533,6 +526,7 @@ def pdf_xl_statement(acc_id=None,ftype=None):
                     sh.write(0, 2, 'Date')
                     sh.write(0, 3, 'Amount')
 
+                    # add row data into Excel file
                     idx = 0
                     for row in data:
                         sh.write(idx+1, 0, str(row.trans_id))
@@ -552,53 +546,17 @@ def pdf_xl_statement(acc_id=None,ftype=None):
             flash("Please, provide account Id",'warning')
     return redirect(url_for('dashboard'))
 
+# route for 404 error
 @app.errorhandler(404)
 def not_found(e):
   return render_template("404.html") 
-# # Change Pasword
-# @app.route("/change-password", methods=["GET", "POST"])
-# def changepass():
-#     if 'user' not in session:
-#         return redirect(url_for('login'))
-#     msg=""
-#     if request.method == "POST":
-#         try:
-#             epswd = request.form.get("epassword")
-#             cpswd = request.form.get("cpassword")
-#             passw_hash = bcrypt.generate_password_hash(cpswd).decode('utf-8')
-#             exist=db.execute("SELECT password FROM accounts WHERE id = :u", {"u": session['user']}).fetchone()
-#             if bcrypt.check_password_hash(exist['password'], epswd) is True:
-#                 res=db.execute("UPDATE accounts SET password = :u WHERE id = :v",{"u":passw_hash,"v":session['user']})
-#                 db.commit()
-#                 if res.rowcount > 0:
-#                     return redirect(url_for('dashboard'))
-#         except exc.IntegrityError:
-#             msg = "Unable to process try again"
-#     msg="Existing Not matching"
-#     return render_template("change_password.html",m=msg)
 
-# # Reset
-# @app.route("/reset", methods=["GET", "POST"])
-# def reset():
-#     msg=""
-#     if session['usert']=="admin":
-        
-#         if request.method == "POST":
-#             rollno = request.form.get("rollno")
-#             passw_hash = bcrypt.generate_password_hash("srit").decode('utf-8')
-#             res=db.execute("UPDATE accounts SET password = :u WHERE id = :v",{"u":passw_hash,"v":rollno})
-#             db.commit()
-#             if res is not None:
-#                 return redirect(url_for('dashboard'))
-#         msg=""
-#         return render_template("pswdreset.html",m=msg)
-#     else:
-#         return redirect(url_for('dashboard'))
-# LOGOUT
+# Logout 
 @app.route("/logout")
 def logout():
     session.pop('user', None)
     return redirect(url_for('login'))
+
 # LOGIN
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -619,6 +577,7 @@ def login():
         flash("Sorry, Username or password not match.","danger")
     return render_template("login.html", login=True)
 
+# Api
 @app.route('/api')
 @app.route('/api/v1')
 def api():
@@ -631,6 +590,7 @@ def api():
     </ol>
     """
 
+# Api for update perticular customer log change in html table onClick of refresh
 @app.route('/customerlog', methods=["GET", "POST"])
 @app.route('/api/v1/customerlog', methods=["GET", "POST"])
 def customerlog():
