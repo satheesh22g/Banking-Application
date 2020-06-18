@@ -64,7 +64,7 @@ $(document).ready(function() {
             $('select.sel_type').not(this).val('current');
     });
 
-    $('.refresh').click(function(event){
+    $('.refresh_cust').click(function(event){
         event.preventDefault()
         target = event.target
         cust_id = parseInt(target.dataset.cust_id)
@@ -80,6 +80,28 @@ $(document).ready(function() {
             parrent_ele = target.parentElement.parentElement
             parrent_ele.children[2].innerHTML = result.message
             parrent_ele.children[3].innerHTML = result.date
+        }).fail(function(error){
+            console.log(error)
+        })
+    })
+
+    $('.refresh_acc').click(function(event){
+        event.preventDefault()
+        target = event.target
+        acc_id = parseInt(target.dataset.acc_id)
+        var data = {"acc_id": acc_id}
+        $.ajax({
+            type: "POST",
+            url: "/api/v1/accountlog",
+            dataType: 'json',
+            data: JSON.stringify(data),
+            contentType:"application/json; charset=UTF-8"
+        }).done(function(result){
+            console.log(result)
+            parrent_ele = target.parentElement.parentElement
+            parrent_ele.children[3].innerHTML = result.status
+            parrent_ele.children[4].innerHTML = result.message
+            parrent_ele.children[5].innerHTML = result.date
         }).fail(function(error){
             console.log(error)
         })

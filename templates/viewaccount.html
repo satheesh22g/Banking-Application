@@ -60,9 +60,15 @@
             <div class="row mb-4 col-md-12">
                 <div class="form-group d-flex col-md-12">
                     {% if session['usert']=="executive" %}
-                    <a href="{{ url_for('delaccount') }}">
-                        <button class="btn float-right">Delete</button>
-                    </a>
+                        {% if i.status == 'active' %}
+                        <a href="{{ url_for('delaccount') }}">
+                            <button class="btn float-right">Delete</button>
+                        </a>
+                        {% else %}
+                            <a href="{{ url_for('activateaccount',acc_id=i.acc_id ) }}">
+                                <button class="btn float-right">Activate</button>
+                            </a>
+                        {% endif %}
                     {% elif session['usert']=="teller" or session['usert']=="cashier" %}
                         {% if i.status == 'active' %}
                             <div class="col-md-4">

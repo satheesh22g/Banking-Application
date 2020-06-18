@@ -176,6 +176,27 @@ def activatecustomer(cust_id=None):
             flash(f'Customer with id : {cust_id} is already activated or not present in database.','warning')
     return redirect(url_for('viewcustomer'))
 
+@app.route('/activateaccount')
+@app.route('/activateaccount/<acc_id>')
+def activateaccount(acc_id=None):
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    if session['usert'] != "executive":
+        flash("You don't have access to this page","warning")
+        return redirect(url_for('dashboard'))
+    if session['usert']=="executive":
+        if acc_id is not None:
+            acc_id = int(acc_id)
+            result = db.execute("SELECT * from accounts WHERE acc_id = :a and status = 'deactive'", {"a": acc_id}).fetchone()
+            if result is not None :
+                date = datetime.datetime.now()
+                query = db.execute("UPDATE accounts SET status='active', message='Account Activated Again', last_update = :d WHERE acc_id = :a", {"d":date,"a": acc_id})
+                db.commit()
+                flash(f"Account is activated.","success")
+                return redirect(url_for('dashboard'))
+            flash(f'Account with id : {acc_id} is already activated or not present in database.','warning')
+    return redirect(url_for('viewaccount'))
+
 @app.route('/customerstatus')
 def customerstatus():
     if 'user' not in session:
@@ -238,15 +259,16 @@ def delaccount():
     if session['usert']=="executive":
         if request.method == "POST":
             acc_id = int(request.form.get("acc_id"))
-            acc_type = request.form.get("acc_type")
-            result = db.execute("SELECT * from accounts WHERE acc_id = :a", {"a": acc_id}).fetchone()
+            result = db.execute("SELECT * from accounts WHERE acc_id = :a and status='active'", {"a": acc_id}).fetchone()
             if result is not None :
                 # delete from accounts WHERE acc_id = :a and acc_type=:at", {"a": acc_id,"at":acc_type}
-                query = db.execute("UPDATE accounts SET status='deactive' WHERE acc_id = :a and acc_type=:at", {"a": acc_id,"at":acc_type})
+                message = "Account Deactivated"
+                date = datetime.datetime.now()
+                query = db.execute("UPDATE accounts SET status='deactive', message= :m, last_update = :d WHERE acc_id = :a;", {"m":message,"d":date,"a": acc_id})
                 db.commit()
                 flash(f"Customer account is Deactivated Successfully.","success")
                 return redirect(url_for('dashboard'))
-            flash(f'Account with id : {acc_id} is not present in database.','warning')
+            flash(f'Account with id : {acc_id} is already deactivate or account not found.','warning')
     return render_template('delaccount.html', delaccount=True)
 
 @app.route("/viewaccount" , methods=["GET", "POST"])
@@ -278,10 +300,10 @@ def viewaccountstatus():
     if session['usert']=="executive":
         data = db.execute("select * from accounts").fetchall()
         if data:
-            return render_template('viewaccountstatus.html', viewaccount=True, data=data)
+            return render_template('viewaccountstatus.html', viewaccountstatus=True, data=data)
         else:
             flash("Accounts are not found!", 'danger')
-    return render_template('viewaccountstatus.html', viewaccount=True)
+    return render_template('viewaccountstatus.html', viewaccountstatus=True)
 
 # Code for deposit amount 
 @app.route('/deposit',methods=['GET','POST'])
@@ -619,6 +641,41 @@ def customerlog():
                     "ssn_id" : row.ssn_id,
                     "message" : row.message,
                     "date" : row.date
+                }
+                dict_data.append(t)
+            return jsonify(dict_data)
+
+# Api for update perticular Account log change in html table onClick of refresh
+@app.route('/accountlog', methods=["GET", "POST"])
+@app.route('/api/v1/accountlog', methods=["GET", "POST"])
+def accountlog():
+    if 'user' not in session:
+        flash("Please login","warning")
+        return redirect(url_for('login'))
+    if session['usert'] != "executive":
+        flash("You don't have access to this api","warning")
+        return redirect(url_for('dashboard'))
+    if session['usert']=="executive":
+        if request.method == "POST":
+            acc_id = request.json['acc_id']
+            data = db.execute("select status,message,last_update as time_stamp from accounts where acc_id= :c;",{'c':acc_id}).fetchone()
+            t = {
+                    "status" : data.status,
+                    "message" : data.message,
+                    "date" : data.time_stamp
+                }
+            return jsonify(t)
+        else:
+            dict_data = []
+            data = db.execute("SELECT cust_id, acc_id, acc_type, status, message, last_update from accounts limit 50").fetchall()
+            for row in data:
+                t = {
+                    "cust_id" : row.cust_id,
+                    "acc_id" : row.acc_id,
+                    "acc_type" : row.acc_type,
+                    "status" : row.status,
+                    "message" : row.message,
+                    "date" : row.last_update
                 }
                 dict_data.append(t)
             return jsonify(dict_data)
