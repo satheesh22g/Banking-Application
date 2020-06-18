@@ -5,7 +5,7 @@
   {% else %}
   {% if session['usert']=="executive" %}
   <div class="subnav">
-    <button class="subnavbtn" style=" font-size:20px; ">Customer <i class="fa fa-caret-down"></i></button>
+    <button class="subnavbtn" style=" font-size:20px; ">Customer Management <i class="fa fa-caret-down"></i></button>
     <div class="subnav-content" style="background-color:black !important;">
       <a href="{{ url_for('addcustomer') }}" class="nav-link {% if addcustomer %}active{% endif %}">Add Customer</a>
       <a href="{{ url_for('viewcustomer') }}" class="nav-link {% if viewcustomer %}active{% endif %}" >View Customer</a>
@@ -17,7 +17,7 @@
   </div>
   {% endif %}
   <div class="subnav">
-    <button class="subnavbtn" style=" font-size:20px; ">Account <i class="fa fa-caret-down"></i></button>
+    <button class="subnavbtn" style=" font-size:20px; ">Account Management<i class="fa fa-caret-down"></i></button>
     <div class="subnav-content" style="background-color:black !important;">
       <a href="{{ url_for('addaccount') }}" class="nav-link {% if addaccount %}active{% endif %}">Add Account</a>
       <a href="{{ url_for('viewaccount') }}" class="nav-link {% if viewaccount %}active{% endif %}">View Account</a>
