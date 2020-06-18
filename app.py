@@ -439,16 +439,17 @@ def statement():
         if request.method == "POST":
             acc_id = request.form.get("acc_id")
             number = request.form.get("number")
+            flag = request.form.get("Radio")
             start_date = request.form.get("start_date")
             end_date = request.form.get("end_date")
-            if number.strip():
+            if flag=="red":
                 data = db.execute("SELECT * FROM (SELECT * FROM transactions where acc_id=:d ORDER BY trans_id DESC LIMIT :l)Var1 ORDER BY trans_id ASC;", {"d": acc_id,"l":number}).fetchall()
             else:
-                data = db.execute("SELECT * FROM transactions WHERE acc_id=:a and DATE(time_stamp) >= :s AND DATE(time_stamp) <= :e;",{"a":acc_id,"s":start_date,"e":end_date}).fetchall()
+                data = db.execute("SELECT * FROM transactions WHERE acc_id=:a between DATE(time_stamp) >= :s AND DATE(time_stamp) <= :e;",{"a":acc_id,"s":start_date,"e":end_date}).fetchall()
             if data:
                 return render_template('statement.html', statement=True, data=data, acc_id=acc_id)
             else:
-                flash("Account not found! Please,Check you input.", 'danger')
+                flash("No Transactions", 'danger')
                 return redirect(url_for('dashboard'))
     else:
         flash("You don't have access to this page","warning")
