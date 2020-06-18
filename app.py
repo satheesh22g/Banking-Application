@@ -609,6 +609,7 @@ def api():
     <ol>
         <li>
             <a href="/api/v1/customerlog">Customer Log</a>
+            <a href="/api/v1/accountlog">Account Log</a>
         </li>
     </ol>
     """
