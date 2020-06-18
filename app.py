@@ -552,6 +552,9 @@ def pdf_xl_statement(acc_id=None,ftype=None):
             flash("Please, provide account Id",'warning')
     return redirect(url_for('dashboard'))
 
+@app.errorhandler(404)
+def not_found(e):
+  return render_template("404.html") 
 # # Change Pasword
 # @app.route("/change-password", methods=["GET", "POST"])
 # def changepass():
