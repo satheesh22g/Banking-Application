@@ -58,10 +58,16 @@ p {
     text-align: 5px;
 }
 .navbar {
-    /* background: #0000FF; */
-    background: linear-gradient(to bottom right, darkblue, mediumblue, blue);
-    margin-bottom:0px;
-    min-height:5px;
+  overflow: hidden;
+  background-color: #ffff66;
+}
+.navbar a {
+  float: left;
+  font-size: 16px;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
 }
 
 .navbar-fixed-top {
@@ -70,7 +76,7 @@ p {
     padding-top:0;
 }
 .navbar-inner {
-    background: #00008B;
+    background: #ffff66;
     border-radius:0;
     filter: none;
     border: none;
@@ -149,7 +155,7 @@ p {
 }
 .navbar .btn-navbar:hover, .navbar .btn-navbar {
     border-radius:0;
-    background:#FECE1A;
+    background:#ffff66;
     color: #000;
 }
 .topnav{
@@ -824,6 +830,119 @@ p {
 .sub-section .title {
     padding:0;
 }
+
+/* Submenu css*/
+.navbar a {
+  float: left;
+  font-size: 16px;
+  color:#000;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-weight:bold;
+}
+
+.dropdown {
+  float: left;
+  overflow: hidden;
+}
+
+.dropdown .dropbtn {
+  font-size: 16px;
+  border: none;
+  outline: none;
+  color: white;
+  padding: 14px 16px;
+  background-color:#ffff66;
+  font-family: verdana;
+  margin: 0;
+}
+
+.navbar a:hover, .dropdown:hover .dropbtn {
+  background-color:#ffff66;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color:#000;
+  min-width:160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+.subnav {
+  float: left;
+  overflow: hidden;
+}
+
+.subnav .subnavbtn {
+  font-size: 16px;
+  font-weight:bold;
+  border: none;
+  outline: none;
+  color:#000;
+  padding: 14px 16px;
+  background-color:#ffff66;
+  font-family:verdana ;
+  margin: 0;
+}
+
+.navbar a:hover, .subnav:hover .subnavbtn {
+  background-color:#000 ;
+  color:white;
+}
+
+.subnav-content {
+  display: none;
+  position: absolute;
+  left: 0;
+  background-color:#000;
+  width: 100%;
+  padding: 14px 16px;
+  z-index: 1;
+}
+
+.subnav-content a {
+  float: left;
+  color: white;
+  text-decoration: none;
+}
+
+.subnav-content a:hover {
+  background-color:#ffff66 ;
+  color: black;
+}
+
+.subnav:hover .subnav-content {
+  display: block;
+}
+
+
+.active {
+  background-color: #ffff66;
+  color: white;
+}
+
+.topnav .icon {
+  display: none;
+}
+
+
+
+.topnav a:hover, .dropdown:hover .dropbtn {
+  background-color: #000;
+  color: white;
+}
+
+.dropdown-content a:hover {
+  background-color: #ffff66;
+  color: black;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
 /*******
 3.1 Services
 ***************************************/
