@@ -58,8 +58,12 @@ p {
     text-align: 5px;
 }
 .navbar {
-  overflow: hidden;
-  background-color: #ffff66;
+    overflow: hidden;
+    background-color: #ffff66 !important;
+    margin: 0 !important;
+    padding: 0 5% !important;
+    border-radius: 0 !important;
+    display: block !important;
 }
 .navbar a {
   float: left;
@@ -81,7 +85,6 @@ p {
     filter: none;
     border: none;
     box-shadow: none;
-    background-image: url(../backnav.jpg);
 }
 .navbar .brand img {
     width:120px;
@@ -185,7 +188,6 @@ p {
 }
 
 .navbarlogo {
-    background: #0000FF;
     margin-bottom:0px;
     min-height:5px;
 }
@@ -196,12 +198,10 @@ p {
     padding-top:0;
 }
 .navbar-innerlogo {
-    background: #483D8B;
     border-radius:0;
     filter: none;
     border: none;
     box-shadow: none;
-    background-image: url(../back1.jpg);
 }
 .navbarlogo .brand img {
     width:120px;
@@ -688,7 +688,6 @@ p {
 }
 .primary-section {
     background:#181A1C;
-    background-image: url(../papers.jpg);
     background-repeat: repeat;
     background-size: 800px 600px;
 }
@@ -730,15 +729,6 @@ p {
   color:#181A1C;
 }
 
-.callpapers{
-  background-image: url(../papers.jpg);
-}
-.registration{
-  background-image: url(../registration.jpg);
-}
-.accomodation{
-  background-image: url(../accomodation.jpg);
-}
 .secondary-section {
     background:#00BFFF;
     background: radial-gradient(circle, yellow, green);
@@ -860,6 +850,7 @@ p {
 
 .navbar a:hover, .dropdown:hover .dropbtn {
   background-color:#ffff66;
+  text-decoration: none;
 }
 
 .dropdown-content {
@@ -883,7 +874,6 @@ p {
   color:#000;
   padding: 14px 16px;
   background-color:#ffff66;
-  font-family:verdana ;
   margin: 0;
 }
 
@@ -894,11 +884,9 @@ p {
 
 .subnav-content {
   display: none;
-  position: absolute;
-  left: 0;
+  position: fixed;
   background-color:#000;
-  width: 100%;
-  padding: 14px 16px;
+  width: auto;
   z-index: 1;
 }
 
@@ -920,7 +908,13 @@ p {
 
 .active {
   background-color: #ffff66;
-  color: white;
+  color: black !important;
+}
+a.nav-link.active:hover {
+    color: white !important;
+}
+.subnav a.nav-link.active:hover {
+    color: black !important;
 }
 
 .topnav .icon {
@@ -1345,7 +1339,7 @@ text-align:right;
     color:#181A1C;
 }
 .third-section{
-  background-image: url(../back1.jpg);
+  /* background-image: url(../back1.jpg); */
   /*background-color: rgba(255, 255, 128, .5);*/
   /*background-color: #f2f2f2;*/
   /*background-repeat: no-repeat;*/

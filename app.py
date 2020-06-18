@@ -453,7 +453,7 @@ def statement():
     else:
         flash("You don't have access to this page","warning")
         return redirect(url_for('dashboard'))
-    return render_template('statement.html', viewaccount=True)
+    return render_template('statement.html', statement=True)
 
 @app.route('/pdf_xl_statement/<acc_id>')
 @app.route('/pdf_xl_statement/<acc_id>/<ftype>')
