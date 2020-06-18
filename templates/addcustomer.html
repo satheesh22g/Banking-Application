@@ -5,38 +5,39 @@
 {% block content %}
 <div class = "row mb-3">
     <div class="card">
-        <div class="card-header">
+        <div class="card-header" style="color:#000;text-align:center; font-weight: bold; font-size:22px ">
             Add Customer
         </div>
         <div class="card-body">
             <form action="addcustomer" method="POST">
                 <div class="form-group input-group mb-3">
-                    <label class="m-auto pr-3" for="cust_ssn_id">Customer SSN Id</label>
+                    <label class="m-auto pr-3" for="cust_ssn_id" style="color:#000; font-weight: bold; font-size:18px ">Customer SSN Id<span style="color:#ff0000"><sup>*</sup></span></label>
                    <input class="form-control" name="cust_ssn_id" id="cust_ssn_id" type="textfield" placeholder="Customer SSN ID" required minlength="9" maxlength="9">
                 </div>
                 <div class="form-group input-group mb-3">
-                    <label class="m-auto pr-3" for="name">Customer Name</label>
+                    <label class="m-auto pr-3" for="name" style="color:#000; font-weight: bold; font-size:18px ">Customer Name <span style="color:#ff0000"><sup>*</sup></span></label>
                    <input class="form-control" name="name" id="name" type="textfield" placeholder="Name" required maxlength="50">
                 </div>
                 <div class="form-group input-group mb-3">
-                    <label class="m-auto pr-3" for="address">Address</label>
+                    <label class="m-auto pr-3" for="address" style="color:#000; font-weight: bold; font-size:18px ">Address<span style="color:#ff0000"><sup>*</sup></span></label>
                    <input class="form-control" name="address" id="address" type="textfield" placeholder="Address" required maxlength="100">
                 </div>
                 <div class="form-group input-group mb-3">
-                    <label class="m-auto pr-3" for="age">Age</label>
+                    <label class="m-auto pr-3" for="age"style="color:#000; font-weight: bold; font-size:18px ">Age<span style="color:#ff0000"><sup>*</sup></span></label>
                    <input class="form-control" name="age" id="age" type="textfield" placeholder="Age" required maxlength="3">
                 </div>
                 <div class="form-group input-group mb-3">
-                    <label class="m-auto pr-3" for="state">State</label>
+                    <label class="m-auto pr-3" for="state" style="color:#000; font-weight: bold; font-size:18px ">State<span style="color:#ff0000"><sup>*</sup></span></label>
                    <input class="form-control" name="state" id="state" type="textfield" placeholder="State" required maxlength="20">
                 </div>
                 <div class="form-group input-group mb-3">
-                    <label class="m-auto pr-3" for="city">City</label>
+                    <label class="m-auto pr-3" for="city" style="color:#000; font-weight: bold; font-size:18px ">City<span style="color:#ff0000"><sup>*</sup></span></label>
                    <input class="form-control" name="city" id="city" type="textfield" placeholder="City" required maxlength="20">
                 </div>
-                <div class="form-group">
-                    <input type="submit" value="Submit" class="btn float-left login_btn">
-                    <button class="reset_btn btn float-right">Reset</button>
+                <span style="color:#ff0000; font-weight:bold;"><p><b>(<sup> * </sup>) Fields are compulsory </b></p></span>
+                <div class="form-group" style="background-color:#ffff66; color:#000; font-weight: bold; font-size:22px ">
+                    <input type="submit" value="Submit" class="btn float-left login_btn" style="font-weight:bold; font-size:18px;">
+                    <button class="reset_btn btn float-right" style="font-weight:bold; font-size:18px;">Reset</button>
                 </div>
             </form>
         </div>
