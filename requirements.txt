@@ -13,7 +13,7 @@ Jinja2==2.11.1
 kiwisolver==1.1.0
 lml==0.0.9
 MarkupSafe==1.1.1
-numpy==1.18.1
+numpy==1.22.0
 pycparser==2.19
 pyecharts-jupyter-installer==0.0.3
 pyparsing==2.4.6
