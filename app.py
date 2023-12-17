@@ -11,6 +11,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 import datetime
 import xlwt
 from fpdf import FPDF
+from sqlalchemy import text
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
@@ -42,7 +43,8 @@ def addcustomer():
             age= int(request.form.get("age"))
             state = request.form.get("state")
             city = request.form.get("city")
-            result = db.execute("SELECT * from customers WHERE cust_ssn_id = :c", {"c": cust_ssn_id}).fetchone()
+            sql_query = text("SELECT * from customers WHERE cust_ssn_id = :c")
+            result = db.execute(sql_query, {"c": cust_ssn_id}).fetchone()
             if result is None :
                 result = db.query(Customers).count()
                 if result == 0 :
@@ -76,13 +78,15 @@ def viewcustomer(cust_id=None):
         if request.method == "POST":
             cust_ssn_id = request.form.get("cust_ssn_id")
             cust_id = request.form.get("cust_id")
-            data = db.execute("SELECT * from customers WHERE cust_id = :c or cust_ssn_id = :d", {"c": cust_id, "d": cust_ssn_id}).fetchone()
+            sql_query = text("SELECT * from customers WHERE cust_id = :c or cust_ssn_id = :d")
+            data = db.execute(sql_query, {"c": cust_id, "d": cust_ssn_id}).fetchone()
             if data is not None:
                 return render_template('viewcustomer.html', viewcustomer=True, data=data)
             
             flash("Customer not found! Please,Check you input.", 'danger')
         elif cust_id is not None:
-            data = db.execute("SELECT * from customers WHERE cust_id = :c", {"c": cust_id}).fetchone()
+            sql_query = text("SELECT * from customers WHERE cust_id = :c")
+            data = db.execute(sql_query, {"c": cust_id}).fetchone()
             if data is not None:
                 return render_template('viewcustomer.html', viewcustomer=True, data=data)
             
@@ -105,7 +109,8 @@ def editcustomer(cust_id=None):
         if cust_id is not None:
             if request.method != "POST":
                 cust_id = int(cust_id)
-                data = db.execute("SELECT * from customers WHERE cust_id = :c", {"c": cust_id}).fetchone()
+                sql_query = text("SELECT * from customers WHERE cust_id = :c")
+                data = db.execute(sql_query, {"c": cust_id}).fetchone()
                 if data is not None and data.status != 'deactivate':
                     return render_template('editcustomer.html', editcustomer=True, data=data)
                 else:
@@ -115,9 +120,11 @@ def editcustomer(cust_id=None):
                 name = request.form.get("name")
                 address = request.form.get("address")
                 age= int(request.form.get("age"))
-                result = db.execute("SELECT * from customers WHERE cust_id = :c and status = 'activate'", {"c": cust_id}).fetchone()
+                sql_query = text("SELECT * from customers WHERE cust_id = :c and status = 'activate'")
+                result = db.execute(sql_query, {"c": cust_id}).fetchone()
                 if result is not None :
-                    result = db.execute("UPDATE customers SET name = :n , address = :add , age = :ag WHERE cust_id = :a", {"n": name,"add": address,"ag": age,"a": cust_id})
+                    sql_query = text("UPDATE customers SET name = :n , address = :add , age = :ag WHERE cust_id = :a")
+                    result = db.execute(sql_query, {"n": name,"add": address,"ag": age,"a": cust_id})
                     db.commit()
                     temp = CustomerLog(cust_id=cust_id,log_message="Customer Data Updated")
                     db.add(temp)
@@ -139,10 +146,12 @@ def deletecustomer(cust_id=None):
     if session['usert']=="executive":
         if cust_id is not None:
             cust_id = int(cust_id)
-            result = db.execute("SELECT * from customers WHERE cust_id = :a and status = 'activate'", {"a": cust_id}).fetchone()
+            sql_query = text("SELECT * from customers WHERE cust_id = :a and status = 'activate'")
+            result = db.execute(sql_query, {"a": cust_id}).fetchone()
             if result is not None :
                 # delete from accounts WHERE acc_id = :a and acc_type=:at", {"a": acc_id,"at":acc_type}
-                query = db.execute("UPDATE customers SET status='deactivate' WHERE cust_id = :a", {"a": cust_id})
+                sql_query = text("UPDATE customers SET status='deactivate' WHERE cust_id = :a")
+                query = db.execute(sql_query, {"a": cust_id})
                 db.commit()
                 temp = CustomerLog(cust_id=cust_id,log_message="Customer Deactivated")
                 db.add(temp)
@@ -164,9 +173,11 @@ def activatecustomer(cust_id=None):
     if session['usert']=="executive":
         if cust_id is not None:
             cust_id = int(cust_id)
-            result = db.execute("SELECT * from customers WHERE cust_id = :a and status = 'deactivate'", {"a": cust_id}).fetchone()
+            sql_query = text("SELECT * from customers WHERE cust_id = :a and status = 'deactivate'")
+            result = db.execute(sql_query, {"a": cust_id}).fetchone()
             if result is not None :
-                query = db.execute("UPDATE customers SET status='activate' WHERE cust_id = :a", {"a": cust_id})
+                sql_query = text("UPDATE customers SET status='activate' WHERE cust_id = :a")
+                query = db.execute(sql_query, {"a": cust_id})
                 db.commit()
                 temp = CustomerLog(cust_id=cust_id,log_message="Customer Activated")
                 db.add(temp)
@@ -185,7 +196,8 @@ def customerstatus():
         return redirect(url_for('dashboard'))
     if session['usert']=="executive":
         # join query to get one log message per customer id
-        data = db.execute("SELECT customers.cust_id as id, customers.cust_ssn_id as ssn_id, customerlog.log_message as message, customerlog.time_stamp as date from (select cust_id,log_message,time_stamp from customerlog group by cust_id ORDER by time_stamp desc) as customerlog JOIN customers ON customers.cust_id = customerlog.cust_id group by customerlog.cust_id order by customerlog.time_stamp desc").fetchall()
+        sql_query = text("SELECT customers.cust_id as id, customers.cust_ssn_id as ssn_id, customerlog.log_message as message, customerlog.time_stamp as date from (select cust_id,log_message,time_stamp from customerlog group by cust_id ORDER by time_stamp desc) as customerlog JOIN customers ON customers.cust_id = customerlog.cust_id group by customerlog.cust_id order by customerlog.time_stamp desc")
+        data = db.execute(sql_query).fetchall()
         if data:
             return render_template('customerstatus.html',customerstatus=True , data=data)
         else:
@@ -205,9 +217,11 @@ def addaccount():
             acc_type = request.form.get("acc_type")
             amount= float(request.form.get("amount"))
             message = "Account successfully created"
-            result = db.execute("SELECT * from customers WHERE cust_id = :c", {"c": cust_id}).fetchone()
+            sql_query = text("SELECT * from customers WHERE cust_id = :c")
+            result = db.execute(sql_query, {"c": cust_id}).fetchone()
             if result is not None :
-                result = db.execute("SELECT * from accounts WHERE cust_id = :c and acc_type = :at", {"c": cust_id, "at": acc_type}).fetchone()
+                sql_query = text("SELECT * from accounts WHERE cust_id = :c and acc_type = :at")
+                result = db.execute(sql_query, {"c": cust_id, "at": acc_type}).fetchone()
                 if result is None:
                     result = db.query(Accounts).count()
                     if result == 0 :
@@ -239,10 +253,12 @@ def delaccount():
         if request.method == "POST":
             acc_id = int(request.form.get("acc_id"))
             acc_type = request.form.get("acc_type")
-            result = db.execute("SELECT * from accounts WHERE acc_id = :a", {"a": acc_id}).fetchone()
+            sql_query = text("SELECT * from accounts WHERE acc_id = :a")
+            result = db.execute(sql_query, {"a": acc_id}).fetchone()
             if result is not None :
                 # delete from accounts WHERE acc_id = :a and acc_type=:at", {"a": acc_id,"at":acc_type}
-                query = db.execute("UPDATE accounts SET status='deactive' WHERE acc_id = :a and acc_type=:at", {"a": acc_id,"at":acc_type})
+                sql_query = text("UPDATE accounts SET status='deactive' WHERE acc_id = :a and acc_type=:at")
+                query = db.execute(sql_query, {"a": acc_id,"at":acc_type})
                 db.commit()
                 flash(f"Customer account is Deactivated Successfully.","success")
                 return redirect(url_for('dashboard'))
@@ -257,7 +273,8 @@ def viewaccount():
         if request.method == "POST":
             acc_id = request.form.get("acc_id")
             cust_id = request.form.get("cust_id")
-            data = db.execute("SELECT * from accounts WHERE cust_id = :c or acc_id = :d", {"c": cust_id, "d": acc_id}).fetchall()
+            sql_query = text("SELECT * from accounts WHERE cust_id = :c or acc_id = :d")
+            data = db.execute(sql_query, {"c": cust_id, "d": acc_id}).fetchall()
             if data:
                 return render_template('viewaccount.html', viewaccount=True, data=data)
             
@@ -276,7 +293,8 @@ def viewaccountstatus():
         flash("You don't have access to this page","warning")
         return redirect(url_for('dashboard'))
     if session['usert']=="executive":
-        data = db.execute("select * from accounts").fetchall()
+        sql_query = text("select * from accounts")
+        data = db.execute(sql_query).fetchall()
         if data:
             return render_template('viewaccountstatus.html', viewaccount=True, data=data)
         else:
@@ -298,10 +316,12 @@ def deposit(acc_id=None):
         else:
             if request.method == "POST":
                 amount = request.form.get("amount")
-                data = db.execute("select * from accounts where acc_id = :a and status='active'",{"a":acc_id}).fetchone()
+                sql_query = text("select * from accounts where acc_id = :a and status='active'")
+                data = db.execute(sql_query,{"a":acc_id}).fetchone()
                 if data is not None:
                     balance = int(amount) + int(data.balance)
-                    query = db.execute("UPDATE accounts SET balance= :b WHERE acc_id = :a", {"b":balance,"a": data.acc_id})
+                    sql_query = text("UPDATE accounts SET balance= :b WHERE acc_id = :a")
+                    query = db.execute(sql_query, {"b":balance,"a": data.acc_id})
                     db.commit()
                     flash(f"{amount} Amount deposited into account: {data.acc_id} successfully.",'success')
                     temp = Transactions(acc_id=data.acc_id,trans_message="Amount Deposited",amount=amount)
@@ -310,7 +330,8 @@ def deposit(acc_id=None):
                 else:
                     flash(f"Account not found or Deactivated.",'danger')
             else:
-                data = db.execute("select * from accounts where acc_id = :a",{"a":acc_id}).fetchone()
+                sql_query = text("select * from accounts where acc_id = :a")
+                data = db.execute(sql_query,{"a":acc_id}).fetchone()
                 if data is not None:
                     return render_template('deposit.html', deposit=True, data=data)
                 else:
@@ -333,11 +354,13 @@ def withdraw(acc_id=None):
         else:
             if request.method == "POST":
                 amount = request.form.get("amount")
-                data = db.execute("select * from accounts where acc_id = :a and status='active'",{"a":acc_id}).fetchone()
+                sql_query = text("select * from accounts where acc_id = :a and status='active'")
+                data = db.execute(sql_query,{"a":acc_id}).fetchone()
                 if data is not None:
                     if int(data.balance)>=int(amount):
                         balance =  int(data.balance)-int(amount)
-                        query = db.execute("UPDATE accounts SET balance= :b WHERE acc_id = :a", {"b":balance,"a": data.acc_id})
+                        sql_query = text("UPDATE accounts SET balance= :b WHERE acc_id = :a")
+                        query = db.execute(sql_query, {"b":balance,"a": data.acc_id})
                         db.commit()
                         flash(f"{amount} Amount withdrawn from account: {data.acc_id} successfully.",'success')
                         temp = Transactions(acc_id=data.acc_id,trans_message="Amount Withdrawn",amount=amount)
@@ -349,7 +372,8 @@ def withdraw(acc_id=None):
                 else:
                     flash(f"Account not found or Deactivated.",'danger')
             else:
-                data = db.execute("select * from accounts where acc_id = :a",{"a":acc_id}).fetchone()
+                sql_query = text("select * from accounts where acc_id = :a")
+                data = db.execute(sql_query,{"a":acc_id}).fetchone()
                 if data is not None:
                     return render_template('withdraw.html', deposit=True, data=data)
                 else:
@@ -375,20 +399,22 @@ def transfer(cust_id=None):
                 trg_type = request.form.get("trg_type")
                 amount = int(request.form.get("amount"))
                 if src_type != trg_type:
-                    src_data  = db.execute("select * from accounts where cust_id = :a and acc_type = :t and status='active'",{"a":cust_id,"t":src_type}).fetchone()
-                    trg_data  = db.execute("select * from accounts where cust_id = :a and acc_type = :t and status='active'",{"a":cust_id,"t":trg_type}).fetchone()
+                    sql_query = text("select * from accounts where cust_id = :a and acc_type = :t and status='active'")
+                    src_data  = db.execute(sql_query,{"a":cust_id,"t":src_type}).fetchone()
+                    sql_query = text("select * from accounts where cust_id = :a and acc_type = :t and status='active'")
+                    trg_data  = db.execute(sql_query,{"a":cust_id,"t":trg_type}).fetchone()
                     if src_data is not None and trg_data is not None:
                         if src_data.balance > amount:
                             src_balance = src_data.balance - amount
                             trg_balance = trg_data.balance + amount
-                            
-                            test = db.execute("update accounts set balance = :b where cust_id = :a and acc_type = :t",{"b":src_balance,"a":cust_id,"t":src_type})
+                            sql_query = text("update accounts set balance = :b where cust_id = :a and acc_type = :t")
+                            test = db.execute(sql_query,{"b":src_balance,"a":cust_id,"t":src_type})
                             db.commit()
                             temp = Transactions(acc_id=src_data.acc_id,trans_message="Amount Transfered to "+str(trg_data.acc_id),amount=amount)
                             db.add(temp)
                             db.commit()
-
-                            db.execute("update accounts set balance = :b where cust_id = :a and acc_type = :t",{"b":trg_balance,"a":cust_id,"t":trg_type})
+                            sql_query = text("update accounts set balance = :b where cust_id = :a and acc_type = :t")
+                            db.execute(sql_query,{"b":trg_balance,"a":cust_id,"t":trg_type})
                             db.commit()
                             temp = Transactions(acc_id=trg_data.acc_id,trans_message="Amount received from "+str(src_data.acc_id),amount=amount)
                             db.add(temp)
@@ -405,7 +431,8 @@ def transfer(cust_id=None):
                     flash("Can't Transfer amount to same account.",'warning')
 
             else:
-                data = db.execute("select * from accounts where cust_id = :a",{"a":cust_id}).fetchall()
+                sql_query = text("select * from accounts where cust_id = :a")
+                data = db.execute(sql_query,{"a":cust_id}).fetchall()
                 if data and len(data) == 2:
                     return render_template('transfer.html', deposit=True, cust_id=cust_id)
                 else:
@@ -433,9 +460,11 @@ def statement():
             start_date = request.form.get("start_date")
             end_date = request.form.get("end_date")
             if flag=="red":
-                data = db.execute("SELECT * FROM (SELECT * FROM transactions where acc_id=:d ORDER BY trans_id DESC LIMIT :l)Var1 ORDER BY trans_id ASC;", {"d": acc_id,"l":number}).fetchall()
+                sql_query = text("SELECT * FROM (SELECT * FROM transactions where acc_id=:d ORDER BY trans_id DESC LIMIT :l)Var1 ORDER BY trans_id ASC;")
+                data = db.execute(sql_query, {"d": acc_id,"l":number}).fetchall()
             else:
-                data = db.execute("SELECT * FROM transactions WHERE acc_id=:a between DATE(time_stamp) >= :s AND DATE(time_stamp) <= :e;",{"a":acc_id,"s":start_date,"e":end_date}).fetchall()
+                sql_query = text("SELECT * FROM transactions WHERE acc_id=:a between DATE(time_stamp) >= :s AND DATE(time_stamp) <= :e;")
+                data = db.execute(sql_query,{"a":acc_id,"s":start_date,"e":end_date}).fetchall()
             if data:
                 return render_template('statement.html', statement=True, data=data, acc_id=acc_id)
             else:
@@ -457,7 +486,8 @@ def pdf_xl_statement(acc_id=None,ftype=None):
         return redirect(url_for('dashboard'))       
     if session['usert']=="teller" or session['usert']=="cashier":
         if acc_id is not None:
-            data = db.execute("SELECT * FROM transactions WHERE acc_id=:a order by time_stamp limit 20;",{"a":acc_id}).fetchall()
+            sql_query = text("SELECT * FROM transactions WHERE acc_id=:a order by time_stamp limit 20;")
+            data = db.execute(sql_query,{"a":acc_id}).fetchall()
             column_names = ['TransactionId', 'Description', 'Date', 'Amount']
             if data:
                 if ftype is None: # Check for provide pdf file as default
@@ -501,8 +531,8 @@ def pdf_xl_statement(acc_id=None,ftype=None):
                         pdf.ln(th)
                     
                     pdf.ln(10)
-
-                    bal = db.execute("SELECT balance FROM accounts WHERE acc_id=:a;",{"a":acc_id}).fetchone()
+                    sql_query = text("SELECT balance FROM accounts WHERE acc_id=:a;")
+                    bal = db.execute(sql_query,{"a":acc_id}).fetchone()
                     
                     pdf.set_font('Times','',10.0) 
                     msg='Current Balance : '+str(bal.balance)
@@ -567,9 +597,11 @@ def login():
     if request.method == "POST":
         usern = request.form.get("username").upper()
         passw = request.form.get("password").encode('utf-8')
-        result = db.execute("SELECT * FROM users WHERE id = :u", {"u": usern}).fetchone()
+        sql_query = text('SELECT * FROM users WHERE id = :u')
+        #result = db.execute(sql_query, {"u": usern}).fetchone()
+        result = db.query(Users).filter_by(id=usern).first()
         if result is not None:
-            if bcrypt.check_password_hash(result['password'], passw) is True:
+            if bcrypt.check_password_hash(result.password, passw) is True:
                 session['user'] = usern
                 session['namet'] = result.name
                 session['usert'] = result.user_type
@@ -604,7 +636,8 @@ def customerlog():
     if session['usert']=="executive":
         if request.method == "POST":
             cust_id = request.json['cust_id']
-            data = db.execute("select log_message,time_stamp from customerlog where cust_id= :c ORDER by time_stamp desc",{'c':cust_id}).fetchone()
+            sql_query = text("select log_message,time_stamp from customerlog where cust_id= :c ORDER by time_stamp desc")
+            data = db.execute(sql_query,{'c':cust_id}).fetchone()
             t = {
                     "message" : data.log_message,
                     "date" : data.time_stamp
@@ -612,7 +645,8 @@ def customerlog():
             return jsonify(t)
         else:
             dict_data = []
-            data = db.execute("SELECT customers.cust_id as id, customers.cust_ssn_id as ssn_id, customerlog.log_message as message, customerlog.time_stamp as date from customerlog JOIN customers ON customers.cust_id = customerlog.cust_id order by customerlog.time_stamp desc limit 50").fetchall()
+            sql_query=text("SELECT customers.cust_id as id, customers.cust_ssn_id as ssn_id, customerlog.log_message as message, customerlog.time_stamp as date from customerlog JOIN customers ON customers.cust_id = customerlog.cust_id order by customerlog.time_stamp desc limit 50")
+            data = db.execute(sql_query).fetchall()
             for row in data:
                 t = {
                     "id" : row.id,
